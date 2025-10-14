@@ -7,15 +7,15 @@
 
 #pragma once
 
-template <typename T>
+// Concrete double-only N2Array (non-templated)
 class N2Array {
     public:
-        T** n2array;
+        double** n2array;
         const int* shape;
-        T* n1array;
+        double* n1array;
 
-        N2Array(T** darray, int* shape);
-        N2Array(T* darray, int* shape);
+        N2Array(double** darray, int* shape);
+        N2Array(double* darray, int* shape);
         ~N2Array();
 
         N2Array transpose();
@@ -24,10 +24,10 @@ class N2Array {
         N2Array operator-(const N2Array& other);
         N2Array operator*(const N2Array& other);
         N2Array operator/(const N2Array& other);
-        N2Array operator+(const T& scalar);
-        N2Array operator-(const T& scalar);
-        N2Array operator*(const T& scalar);
-        N2Array operator/(const T& scalar);
+        N2Array operator+(const double& scalar);
+        N2Array operator-(const double& scalar);
+        N2Array operator*(const double& scalar);
+        N2Array operator/(const double& scalar);
         N2Array operator=(const N2Array& other);
 
         bool operator==(const N2Array& other);
@@ -38,8 +38,5 @@ class N2Array {
 
         char* toString();
 };
-
-// Bao gồm phần template implementation
-#include "n2array.tpp"
 
 #endif

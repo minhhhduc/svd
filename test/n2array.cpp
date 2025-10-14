@@ -1,8 +1,5 @@
 // Keep this TU minimal for a header-only template. Users should include n2array.h.
-#include "n2array.h"
-
-// Minimal demo: include N2Array and print a small matrix
-#include "include/n2array.h"
+#include "../include/n2array.h"
 #include <iostream>
 using namespace std;
 
@@ -17,7 +14,7 @@ int main() {
 		}
 	}
 
-	N2Array<double> A(data, shape);
+	N2Array A(data, shape);
 	cout << A.toString() << endl;
 	cout << (A*3.0).toString() << endl;
 

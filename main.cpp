@@ -14,10 +14,10 @@ int main() {
 		}
 	}
 
-	N2Array<double> A(data, shape);
+	N2Array A(data, shape);
 	cout << A.toString() << endl;
 	cout << (A*3.0).toString() << endl;
-	cout << "First row: " << A[0].toString() << endl;	
+	cout << "First row: " << A[0].toString() << endl;    
 
 	cout << "Shape: " << A[0].shape[0] << " x " << A[0].shape[1] << endl;
 

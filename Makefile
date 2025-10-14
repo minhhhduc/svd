@@ -21,18 +21,21 @@ $(BIN_DIR):
 library:
 	@if not exist library mkdir library
 
-# Build main executable (header-only templates, no need for object files)
-$(BIN_DIR)/main: main.cpp $(INCLUDE_DIR)/n2array.h $(INCLUDE_DIR)/n2array.tpp
-	$(CXX) $(CXXFLAGS) main.cpp -o $@ $(LDFLAGS)
+SOURCES_CPP := main.cpp source/n2array.cpp source/numc.cpp
+OBJECTS := $(SOURCES_CPP:.cpp=.o)
+
+# Build main executable (compile sources)
+$(BIN_DIR)/main: $(OBJECTS) | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
 
 # Build test executable if test files exist
 test: $(BIN_DIR)/test_n2array
 
-$(BIN_DIR)/test_n2array: test/n2array.cpp $(INCLUDE_DIR)/n2array.h $(INCLUDE_DIR)/n2array.tpp | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) test/n2array.cpp -o $@ $(LDFLAGS)
+$(BIN_DIR)/test_n2array: test/n2array.cpp source/n2array.cpp | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) test/n2array.cpp source/n2array.cpp -o $@ $(LDFLAGS)
 
 # Optional: compile source files to objects (for non-header-only parts)
-library/%.o: source/%.cpp $(INCLUDE_DIR)/%.h | library
+%.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
