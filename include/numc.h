@@ -14,6 +14,9 @@ public:
     double* linspace(double start, double stop, int num = 50);
     N2Array zeros(int rows, int cols);
     N2Array ones(int rows, int cols);
+    // int* shape(const int* darray);
+    // int* argsort(const double* darray, int size, int axis=-1);
+    // int* argsort(N2Array arr, int axis=-1);
 };
 
 // Non-templated convenience functions operating on double arrays
