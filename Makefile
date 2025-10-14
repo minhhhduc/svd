@@ -35,7 +35,13 @@ TEST_BASENAMES := $(notdir $(TEST_SOURCES:.cpp=))
 # Prefix test binaries with t_ so they can be discovered easily (bin/t_<name>)
 TEST_BINS := $(addprefix $(BIN_DIR)/t_,$(TEST_BASENAMES))
 
-test: $(TEST_BINS)
+test:
+	@echo Building only test files that contain main()
+	@for %%f in (test\*.cpp) do @( \
+		( findstr /C:"int main" "%%f" >nul 2>&1 || findstr /C:"void main" "%%f" >nul 2>&1 ) \
+		&& ( echo Found main in %%~nxf && $(MAKE) $(BIN_DIR)/t_%%~nf ) \
+		|| ( echo Skipping %%~nxf -- no main ) \
+	)
 
 $(BIN_DIR)/t_%: test/%.cpp $(TEST_OBJECTS) | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) test/$*.cpp $(TEST_OBJECTS) -o $@ $(LDFLAGS)
