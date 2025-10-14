@@ -14,9 +14,7 @@ int main() {
 		}
 	}
 
-	N2Array A(data, shape);
-	cout << A.toString() << endl;
-	cout << (A*3.0).toString() << endl;
+	cout << "test" << endl;
 
 	return 0;
 }
