@@ -25,6 +25,39 @@ N2Array::N2Array(double* darray, int* shp) {
     this->n2array = nullptr;
 }
 
+N2Array::N2Array(const N2Array& other) {
+    // Deep copy shape
+    int* own_shape = new int[2];
+    own_shape[0] = other.shape[0];
+    own_shape[1] = other.shape[1];
+    this->shape = own_shape;
+    
+    int rows = shape[0];
+    int cols = shape[1];
+    
+    if (other.n2array) {
+        // Deep copy 2D array
+        this->n2array = new double*[rows];
+        for (int i = 0; i < rows; ++i) {
+            this->n2array[i] = new double[cols];
+            for (int j = 0; j < cols; ++j) {
+                this->n2array[i][j] = other.n2array[i][j];
+            }
+        }
+        this->n1array = nullptr;
+    } else if (other.n1array) {
+        // Deep copy 1D array
+        this->n1array = new double[rows * cols];
+        for (int i = 0; i < rows * cols; ++i) {
+            this->n1array[i] = other.n1array[i];
+        }
+        this->n2array = nullptr;
+    } else {
+        this->n2array = nullptr;
+        this->n1array = nullptr;
+    }
+}
+
 N2Array::~N2Array() {
     if (n2array) {
         for (int i = 0; i < shape[0]; ++i) {
