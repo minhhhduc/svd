@@ -3,18 +3,21 @@
 #include <iostream>
 using namespace std;
 
-int main() {
+N2Array testN2Array(double** data, int* shape) {
 	// Create a 2x3 matrix using 2D allocation
-	int* shape = new int[2]{2, 3};
-	double** data = new double*[shape[0]];
-	for (int i = 0; i < shape[0]; ++i) {
-		data[i] = new double[shape[1]];
-		for (int j = 0; j < shape[1]; ++j) {
-			data[i][j] = i * shape[1] + j + 1; // 1..6
-		}
-	}
+	cout << "-------------------------------------------" << endl;
+	cout << "****N2Array test:****\n";
+	N2Array A(data, shape);
+	cout << A.toString() << endl;
 
-	cout << "test" << endl;
+	cout << "test operator (scalar):\n";
+	cout << (A*3.0).toString() << endl;
+	
+	cout << "First row: " << A[0].toString() << endl;
+	cout << "Shape: " << A[0].shape[0] << " x " << A[0].shape[1] << endl;
 
-	return 0;
+	cout << "test transpose:\n";
+	cout << "shape: " << A[0].transpose().toString() << endl;
+
+	return A;
 }
