@@ -1,5 +1,5 @@
 // Minimal demo: include N2Array and print a small matrix
-#include "n2array.hpp"
+#include "n2array.h"
 #include <iostream>
 using namespace std;
 

@@ -22,17 +22,17 @@ library:
 	@if not exist library mkdir library
 
 # Build main executable (header-only templates, no need for object files)
-$(BIN_DIR)/main: main.cpp $(INCLUDE_DIR)/n2array.hpp $(INCLUDE_DIR)/n2array.tpp
+$(BIN_DIR)/main: main.cpp $(INCLUDE_DIR)/n2array.h $(INCLUDE_DIR)/n2array.tpp
 	$(CXX) $(CXXFLAGS) main.cpp -o $@ $(LDFLAGS)
 
 # Build test executable if test files exist
 test: $(BIN_DIR)/test_n2array
 
-$(BIN_DIR)/test_n2array: test/n2array.cpp $(INCLUDE_DIR)/n2array.hpp $(INCLUDE_DIR)/n2array.tpp | $(BIN_DIR)
+$(BIN_DIR)/test_n2array: test/n2array.cpp $(INCLUDE_DIR)/n2array.h $(INCLUDE_DIR)/n2array.tpp | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) test/n2array.cpp -o $@ $(LDFLAGS)
 
 # Optional: compile source files to objects (for non-header-only parts)
-library/%.o: source/%.cpp $(INCLUDE_DIR)/%.hpp | library
+library/%.o: source/%.cpp $(INCLUDE_DIR)/%.h | library
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:
