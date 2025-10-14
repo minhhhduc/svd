@@ -4,9 +4,6 @@
 #include <iostream>
 using namespace std;
 
-<<<<<<< HEAD
-int main() {
-=======
 N2Array testN2Array(double** data, int* shape) {
 	// Create a 2x3 matrix using 2D allocation
 	N2Array A(data, shape);
@@ -43,6 +40,5 @@ int main() {
 	}
 	N2Array A = testN2Array(data, shape);
 	testNumC(A);
->>>>>>> de94d101fc120e68696a2a6550cc8826fd20adf3
 	return 0;
 }
