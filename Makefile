@@ -23,16 +23,22 @@ library:
 
 SOURCES_CPP := main.cpp source/n2array.cpp source/numc.cpp
 OBJECTS := $(SOURCES_CPP:.cpp=.o)
+TEST_OBJECTS := $(filter-out main.o,$(OBJECTS))
 
 # Build main executable (compile sources)
 $(BIN_DIR)/main: $(OBJECTS) | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
 
-# Build test executable if test files exist
-test: $(BIN_DIR)/test_n2array
+# Build all test executables: compile every .cpp in test/ into bin/<basename>
+TEST_SOURCES := $(wildcard test/*.cpp)
+TEST_BASENAMES := $(notdir $(TEST_SOURCES:.cpp=))
+# Prefix test binaries with t_ so they can be discovered easily (bin/t_<name>)
+TEST_BINS := $(addprefix $(BIN_DIR)/t_,$(TEST_BASENAMES))
 
-$(BIN_DIR)/test_n2array: test/n2array.cpp source/n2array.cpp | $(BIN_DIR)
-	$(CXX) $(CXXFLAGS) test/n2array.cpp source/n2array.cpp -o $@ $(LDFLAGS)
+test: $(TEST_BINS)
+
+$(BIN_DIR)/t_%: test/%.cpp $(TEST_OBJECTS) | $(BIN_DIR)
+	$(CXX) $(CXXFLAGS) test/$*.cpp $(TEST_OBJECTS) -o $@ $(LDFLAGS)
 
 # Optional: compile source files to objects (for non-header-only parts)
 %.o: %.cpp

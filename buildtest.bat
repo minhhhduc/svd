@@ -1,13 +1,9 @@
 @echo off
-rem buildtest.bat - build the test binary and run it (Windows cmd)
+rem buildtest.bat - build all test binaries and run every bin\t_* executable (Windows cmd)
 
 setlocal enabledelayedexpansion
 
-echo === building test target ===
-if not exist Makefile (
-	echo Makefile not found in %CD% && exit /b 1
-)
-
+echo === building test targets ===
 where mingw32-make >nul 2>&1
 if %ERRORLEVEL%==0 (
 	set MAKE=mingw32-make
@@ -20,21 +16,26 @@ if %ERRORLEVEL%==0 (
 	)
 )
 
-rem Build the test target (Makefile defines the 'test' target)
 %MAKE% test || (echo Build test failed && exit /b 3)
 
-rem Test binary location per Makefile
-if exist bin\test_n2array.exe (
-	set TESTBIN=bin\test_n2array.exe
-) else if exist bin\test_n2array (
-	set TESTBIN=bin\test_n2array
-) else (
-	echo Test binary not found in bin\ && exit /b 4
+echo === discovering test binaries ===
+set FOUND=0
+for %%F in (bin\t_*) do (
+	if exist "%%F.exe" (
+		set FOUND=1
+		echo ================Running %%~nF.exe...================
+		"%%F.exe" || (echo Test %%~nF failed with code %%ERRORLEVEL% & exit /b 4)
+	) else if exist "%%F" (
+		set FOUND=1
+		echo ================Running %%~nF...================
+		"%%F" || (echo Test %%~nF failed with code %%ERRORLEVEL% & exit /b 4)
+	)
 )
 
-echo === running %TESTBIN% ===
-%TESTBIN% || (echo Test exited with code %ERRORLEVEL% && exit /b 5)
+if %FOUND%==0 (
+	echo No test binaries found matching bin\t_* && exit /b 5
+)
 
-echo === test finished ===
+echo === all tests passed ===
 endlocal
 exit /b 0
