@@ -16,6 +16,7 @@ class N2Array {
 
         N2Array(double** darray, int* shape);
         N2Array(double* darray, int* shape);
+        N2Array(const N2Array& other); // Copy constructor
         ~N2Array();
 
         N2Array transpose();

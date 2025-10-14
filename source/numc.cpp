@@ -8,6 +8,58 @@
 #include <omp.h>
 #endif
 
+// NumC class implementations
+double* NumC::arange(double start, double stop, double step) {
+    int n = static_cast<int>((stop - start) / step);
+    if (n <= 0) return nullptr;
+    
+    double* result = new double[n];
+    for (int i = 0; i < n; ++i) {
+        result[i] = start + i * step;
+    }
+    return result;
+}
+
+double* NumC::linspace(double start, double stop, int num) {
+    if (num <= 0) return nullptr;
+    if (num == 1) {
+        double* result = new double[1];
+        result[0] = start;
+        return result;
+    }
+    
+    double* result = new double[num];
+    double step = (stop - start) / (num - 1);
+    for (int i = 0; i < num; ++i) {
+        result[i] = start + i * step;
+    }
+    return result;
+}
+
+N2Array NumC::zeros(int rows, int cols) {
+    double** data = new double*[rows];
+    for (int i = 0; i < rows; ++i) {
+        data[i] = new double[cols];
+        for (int j = 0; j < cols; ++j) {
+            data[i][j] = 0.0;
+        }
+    }
+    int* shape = new int[2]{rows, cols};
+    return N2Array(data, shape);
+}
+
+N2Array NumC::ones(int rows, int cols) {
+    double** data = new double*[rows];
+    for (int i = 0; i < rows; ++i) {
+        data[i] = new double[cols];
+        for (int j = 0; j < cols; ++j) {
+            data[i][j] = 1.0;
+        }
+    }
+    int* shape = new int[2]{rows, cols};
+    return N2Array(data, shape);
+}
+
 N2Array dot(const N2Array& a, const N2Array& b) {
     if (!a.shape || !b.shape) throw std::invalid_argument("Null shape");
     int a_rows = a.shape[0];
