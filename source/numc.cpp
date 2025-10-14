@@ -8,7 +8,19 @@
 #include <omp.h>
 #endif
 
-// NumC class implementations
+/**
+ * @brief Generates an array of evenly spaced double values within a specified range.
+ *
+ * This function creates a dynamically allocated array of doubles, starting from `start` (inclusive),
+ * incrementing by `step`, and stopping before reaching `stop`. The number of elements is determined
+ * by the formula: n = (stop - start) / step. If the computed number of elements is less than or equal to zero,
+ * the function returns nullptr.
+ *
+ * @param start The starting value of the sequence (inclusive).
+ * @param stop The end value of the sequence (exclusive).
+ * @param step The increment between consecutive values.
+ * @return Pointer to the dynamically allocated array of doubles, or nullptr if the range is invalid.
+ */
 double* NumC::arange(double start, double stop, double step) {
     int n = static_cast<int>((stop - start) / step);
     if (n <= 0) return nullptr;
@@ -20,6 +32,18 @@ double* NumC::arange(double start, double stop, double step) {
     return result;
 }
 
+/**
+ * @brief Generates an array of `num` evenly spaced double values between `start` and `stop`, inclusive.
+ * 
+ * This function creates a dynamically allocated array of doubles, starting from `start` and ending at `stop`,
+ * with a total of `num` elements. If `num` is less than or equal to zero, the function returns nullptr. If `num` is 1,
+ * the function returns an array containing only the `start` value.
+ * 
+ * @param start The starting value of the sequence.
+ * @param stop The ending value of the sequence.
+ * @param num The number of evenly spaced values to generate.
+ * @return Pointer to the dynamically allocated array of doubles, or nullptr if `num` is
+ */
 double* NumC::linspace(double start, double stop, int num) {
     if (num <= 0) return nullptr;
     if (num == 1) {
@@ -36,6 +60,16 @@ double* NumC::linspace(double start, double stop, int num) {
     return result;
 }
 
+/**
+ * @brief Creates a 2D N2Array of the specified shape, filled with zeros.
+ * 
+ * This function allocates a 2D array of doubles with the given number of rows and columns,
+ * initializing all elements to 0.0. The resulting array is wrapped in an N2Array object.
+ * 
+ * @param rows The number of rows in the array.
+ * @param cols The number of columns in the array.
+ * @return An N2Array object containing the zero-filled array.
+ */
 N2Array NumC::zeros(int rows, int cols) {
     double** data = new double*[rows];
     for (int i = 0; i < rows; ++i) {
@@ -48,6 +82,16 @@ N2Array NumC::zeros(int rows, int cols) {
     return N2Array(data, shape);
 }
 
+/**
+ * @brief Creates a 2D N2Array of the specified shape, filled with ones.
+ * 
+ * This function allocates a 2D array of doubles with the given number of rows and columns,
+ * initializing all elements to 1.0. The resulting array is wrapped in an N2Array object.
+ * 
+ * @param rows The number of rows in the array.
+ * @param cols The number of columns in the array.
+ * @return An N2Array object containing the one-filled array.
+ */
 N2Array NumC::ones(int rows, int cols) {
     double** data = new double*[rows];
     for (int i = 0; i < rows; ++i) {
@@ -60,6 +104,18 @@ N2Array NumC::ones(int rows, int cols) {
     return N2Array(data, shape);
 }
 
+/**
+ * @brief Computes the dot product of two N2Array objects.
+ * 
+ * This function performs matrix multiplication between two N2Array objects `a` and `b`.
+ * The number of columns in `a` must match the number of rows in `b`.
+ * The result is a new N2Array object containing the product.
+ * 
+ * @param a The first N2Array operand.
+ * @param b The second N2Array operand.
+ * @return An N2Array object containing the result of the dot product.
+ * @throws std::invalid_argument if the shapes are incompatible for multiplication.
+ */
 N2Array dot(const N2Array& a, const N2Array& b) {
     if (!a.shape || !b.shape) throw std::invalid_argument("Null shape");
     int a_rows = a.shape[0];
@@ -95,6 +151,16 @@ N2Array dot(const N2Array& a, const N2Array& b) {
     return N2Array(result, shape);
 }
 
+/**
+ * @brief Computes the minimum value in the N2Array.
+ * 
+ * This function iterates through all elements of the N2Array `a` and finds the minimum value.
+ * The result is returned as a new N2Array object with shape (1, 1).
+ * 
+ * @param a The N2Array to compute the minimum from.
+ * @return An N2Array object containing the minimum value.
+ * @throws std::invalid_argument if the input array has a null shape.
+ */
 N2Array min(const N2Array& a, int axis) {
     if (!a.shape) throw std::invalid_argument("Null shape");
     int rows = a.shape[0];
@@ -144,6 +210,16 @@ N2Array min(const N2Array& a, int axis) {
     }
 }
 
+/**
+ * @brief Computes the maximum value in the N2Array.
+ * 
+ * This function iterates through all elements of the N2Array `a` and finds the maximum value.
+ * The result is returned as a new N2Array object with shape (1, 1).
+ * 
+ * @param a The N2Array to compute the maximum from.
+ * @return An N2Array object containing the maximum value.
+ * @throws std::invalid_argument if the input array has a null shape.
+ */
 N2Array max(const N2Array& a, int axis) {
     if (!a.shape) throw std::invalid_argument("Null shape");
     int rows = a.shape[0];
@@ -193,6 +269,18 @@ N2Array max(const N2Array& a, int axis) {
     }
 }
 
+/**
+ * @brief Computes the sum of elements in the N2Array.
+ * 
+ * This function sums the elements of the N2Array `a` along the specified axis.
+ * If `axis` is -1, it sums all elements. If `axis` is 0, it sums along rows (resulting in a 1 x cols array).
+ * If `axis` is 1, it sums along columns (resulting in a rows x 1 array).
+ * 
+ * @param a The N2Array to compute the sum from.
+ * @param axis The axis along which to sum (-1 for all, 0 for rows, 1 for columns).
+ * @return An N2Array object containing the sum.
+ * @throws std::invalid_argument if the input array has a null shape or if the axis is invalid.
+ */
 N2Array sum(const N2Array& a, int axis) {
     if (!a.shape) throw std::invalid_argument("Null shape");
     int rows = a.shape[0];
@@ -237,6 +325,18 @@ N2Array sum(const N2Array& a, int axis) {
     }
 }
 
+/**
+ * @brief Computes the mean of elements in the N2Array along the specified axis.
+ * 
+ * This function calculates the mean of the N2Array `a` along the given axis.
+ * If `axis` is -1, it computes the mean of all elements. If `axis` is 0, it computes the mean along rows (resulting in a 1 x cols array).
+ * If `axis` is 1, it computes the mean along columns (resulting in a rows x 1 array).
+ * 
+ * @param a The N2Array to compute the mean from.
+ * @param axis The axis along which to compute the mean (-1 for all, 0 for rows, 1 for columns).
+ * @return An N2Array object containing the mean values.
+ * @throws std::invalid_argument if the input array has a null shape or if the axis is invalid.
+ */
 N2Array mean(const N2Array& a, int axis) {
     int rows = a.shape[0];
     int cols = a.shape[1];
@@ -273,6 +373,18 @@ N2Array mean(const N2Array& a, int axis) {
     }
 }
 
+/**
+ * @brief Computes the standard deviation of elements in the N2Array along the specified axis.
+ * 
+ * This function calculates the standard deviation of the N2Array `a` along the given axis.
+ * If `axis` is -1, it computes the standard deviation of all elements. If `axis` is 0, it computes the standard deviation along rows (resulting in a 1 x cols array).
+ * If `axis` is 1, it computes the standard deviation along columns (resulting in a rows x 1 array).
+ * 
+ * @param a The N2Array to compute the standard deviation from.
+ * @param axis The axis along which to compute the standard deviation (-1 for all, 0 for rows, 1 for columns).
+ * @return An N2Array object containing the standard deviation values.
+ * @throws std::invalid_argument if the input array has a null shape or if the axis is invalid.
+ */
 N2Array stdev(const N2Array& a, int axis) {
     if (!a.shape) throw std::invalid_argument("Null shape");
     int rows = a.shape[0];
