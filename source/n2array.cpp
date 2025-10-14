@@ -101,97 +101,170 @@ N2Array N2Array::transpose() {
 }
 
 N2Array N2Array::operator+(const N2Array& other) {
-    if (shape[0] != other.shape[0] || shape[1] != other.shape[1]) {
-        throw std::invalid_argument("Shapes do not match for addition");
+    // Broadcasting logic: determine output shape and broadcasting rules
+    int a_rows = shape[0], a_cols = shape[1];
+    int b_rows = other.shape[0], b_cols = other.shape[1];
+    
+    // Determine output shape (broadcast to larger dimensions)
+    int out_rows = std::max(a_rows, b_rows);
+    int out_cols = std::max(a_cols, b_cols);
+    
+    // Check broadcasting compatibility
+    if ((a_rows != 1 && a_rows != out_rows) || (a_cols != 1 && a_cols != out_cols) ||
+        (b_rows != 1 && b_rows != out_rows) || (b_cols != 1 && b_cols != out_cols)) {
+        throw std::invalid_argument("Shapes are not broadcastable for addition");
     }
-    int rows = shape[0];
-    int cols = shape[1];
-    double** result = new double*[rows];
-    for (int i = 0; i < rows; ++i) result[i] = new double[cols];
+    
+    double** result = new double*[out_rows];
+    for (int i = 0; i < out_rows; ++i) result[i] = new double[out_cols];
 
     auto getA = [&](int r, int c) -> double {
-        return n2array ? n2array[r][c] : n1array[r * cols + c];
+        int ar = (a_rows == 1) ? 0 : r;  // Broadcast along rows if needed
+        int ac = (a_cols == 1) ? 0 : c;  // Broadcast along cols if needed
+        return n2array ? n2array[ar][ac] : n1array[ar * a_cols + ac];
     };
     auto getB = [&](int r, int c) -> double {
-        return other.n2array ? other.n2array[r][c] : other.n1array[r * cols + c];
+        int br = (b_rows == 1) ? 0 : r;  // Broadcast along rows if needed
+        int bc = (b_cols == 1) ? 0 : c;  // Broadcast along cols if needed
+        return other.n2array ? other.n2array[br][bc] : other.n1array[br * b_cols + bc];
     };
 
     #ifdef _OPENMP
     #pragma omp parallel for
     #endif
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
+    for (int i = 0; i < out_rows; ++i) {
+        for (int j = 0; j < out_cols; ++j) {
             result[i][j] = getA(i, j) + getB(i, j);
         }
     }
-    int* new_shape = new int[2]{rows, cols};
+    int* new_shape = new int[2]{out_rows, out_cols};
     return N2Array(result, new_shape);
 }
 
 N2Array N2Array::operator-(const N2Array& other) {
-    if (shape[0] != other.shape[0] || shape[1] != other.shape[1]) {
-        throw std::invalid_argument("Shapes do not match for subtraction");
+    // Broadcasting logic: determine output shape and broadcasting rules
+    int a_rows = shape[0], a_cols = shape[1];
+    int b_rows = other.shape[0], b_cols = other.shape[1];
+    
+    // Determine output shape (broadcast to larger dimensions)
+    int out_rows = std::max(a_rows, b_rows);
+    int out_cols = std::max(a_cols, b_cols);
+    
+    // Check broadcasting compatibility
+    if ((a_rows != 1 && a_rows != out_rows) || (a_cols != 1 && a_cols != out_cols) ||
+        (b_rows != 1 && b_rows != out_rows) || (b_cols != 1 && b_cols != out_cols)) {
+        throw std::invalid_argument("Shapes are not broadcastable for subtraction");
     }
-    int rows = shape[0];
-    int cols = shape[1];
-    double** result = new double*[rows];
-    for (int i = 0; i < rows; ++i) result[i] = new double[cols];
+    
+    double** result = new double*[out_rows];
+    for (int i = 0; i < out_rows; ++i) result[i] = new double[out_cols];
 
-    auto getA = [&](int r, int c) -> double { return n2array ? n2array[r][c] : n1array[r * cols + c]; };
-    auto getB = [&](int r, int c) -> double { return other.n2array ? other.n2array[r][c] : other.n1array[r * cols + c]; };
+    auto getA = [&](int r, int c) -> double {
+        int ar = (a_rows == 1) ? 0 : r;  // Broadcast along rows if needed
+        int ac = (a_cols == 1) ? 0 : c;  // Broadcast along cols if needed
+        return n2array ? n2array[ar][ac] : n1array[ar * a_cols + ac];
+    };
+    auto getB = [&](int r, int c) -> double {
+        int br = (b_rows == 1) ? 0 : r;  // Broadcast along rows if needed
+        int bc = (b_cols == 1) ? 0 : c;  // Broadcast along cols if needed
+        return other.n2array ? other.n2array[br][bc] : other.n1array[br * b_cols + bc];
+    };
 
     #ifdef _OPENMP
     #pragma omp parallel for
     #endif
-    for (int i = 0; i < rows; ++i) for (int j = 0; j < cols; ++j) result[i][j] = getA(i,j) - getB(i,j);
-    int* new_shape = new int[2]{rows, cols};
+    for (int i = 0; i < out_rows; ++i) {
+        for (int j = 0; j < out_cols; ++j) {
+            result[i][j] = getA(i, j) - getB(i, j);
+        }
+    }
+    int* new_shape = new int[2]{out_rows, out_cols};
     return N2Array(result, new_shape);
 }
 
 N2Array N2Array::operator*(const N2Array& other) {
-    if (shape[0] != other.shape[0] || shape[1] != other.shape[1]) {
-        throw std::invalid_argument("Shapes do not match for multiplication");
+    // Broadcasting logic: determine output shape and broadcasting rules
+    int a_rows = shape[0], a_cols = shape[1];
+    int b_rows = other.shape[0], b_cols = other.shape[1];
+    
+    // Determine output shape (broadcast to larger dimensions)
+    int out_rows = std::max(a_rows, b_rows);
+    int out_cols = std::max(a_cols, b_cols);
+    
+    // Check broadcasting compatibility
+    if ((a_rows != 1 && a_rows != out_rows) || (a_cols != 1 && a_cols != out_cols) ||
+        (b_rows != 1 && b_rows != out_rows) || (b_cols != 1 && b_cols != out_cols)) {
+        throw std::invalid_argument("Shapes are not broadcastable for multiplication");
     }
-    int rows = shape[0];
-    int cols = shape[1];
-    double** result = new double*[rows];
-    for (int i = 0; i < rows; ++i) result[i] = new double[cols];
+    
+    double** result = new double*[out_rows];
+    for (int i = 0; i < out_rows; ++i) result[i] = new double[out_cols];
 
-    auto getA = [&](int r, int c) -> double { return n2array ? n2array[r][c] : n1array[r * cols + c]; };
-    auto getB = [&](int r, int c) -> double { return other.n2array ? other.n2array[r][c] : other.n1array[r * cols + c]; };
+    auto getA = [&](int r, int c) -> double {
+        int ar = (a_rows == 1) ? 0 : r;  // Broadcast along rows if needed
+        int ac = (a_cols == 1) ? 0 : c;  // Broadcast along cols if needed
+        return n2array ? n2array[ar][ac] : n1array[ar * a_cols + ac];
+    };
+    auto getB = [&](int r, int c) -> double {
+        int br = (b_rows == 1) ? 0 : r;  // Broadcast along rows if needed
+        int bc = (b_cols == 1) ? 0 : c;  // Broadcast along cols if needed
+        return other.n2array ? other.n2array[br][bc] : other.n1array[br * b_cols + bc];
+    };
 
     #ifdef _OPENMP
     #pragma omp parallel for
     #endif
-    for (int i = 0; i < rows; ++i) for (int j = 0; j < cols; ++j) result[i][j] = getA(i,j) * getB(i,j);
-    int* new_shape = new int[2]{rows, cols};
+    for (int i = 0; i < out_rows; ++i) {
+        for (int j = 0; j < out_cols; ++j) {
+            result[i][j] = getA(i, j) * getB(i, j);
+        }
+    }
+    int* new_shape = new int[2]{out_rows, out_cols};
     return N2Array(result, new_shape);
 }
 
 N2Array N2Array::operator/(const N2Array& other) {
-    if (shape[0] != other.shape[0] || shape[1] != other.shape[1]) {
-        throw std::invalid_argument("Shapes do not match for division");
+    // Broadcasting logic: determine output shape and broadcasting rules
+    int a_rows = shape[0], a_cols = shape[1];
+    int b_rows = other.shape[0], b_cols = other.shape[1];
+    
+    // Determine output shape (broadcast to larger dimensions)
+    int out_rows = std::max(a_rows, b_rows);
+    int out_cols = std::max(a_cols, b_cols);
+    
+    // Check broadcasting compatibility
+    if ((a_rows != 1 && a_rows != out_rows) || (a_cols != 1 && a_cols != out_cols) ||
+        (b_rows != 1 && b_rows != out_rows) || (b_cols != 1 && b_cols != out_cols)) {
+        throw std::invalid_argument("Shapes are not broadcastable for division");
     }
-    int rows = shape[0];
-    int cols = shape[1];
-    double** result = new double*[rows];
-    for (int i = 0; i < rows; ++i) result[i] = new double[cols];
+    
+    double** result = new double*[out_rows];
+    for (int i = 0; i < out_rows; ++i) result[i] = new double[out_cols];
 
-    auto getA = [&](int r, int c) -> double { return n2array ? n2array[r][c] : n1array[r * cols + c]; };
-    auto getB = [&](int r, int c) -> double { return other.n2array ? other.n2array[r][c] : other.n1array[r * cols + c]; };
+    auto getA = [&](int r, int c) -> double {
+        int ar = (a_rows == 1) ? 0 : r;  // Broadcast along rows if needed
+        int ac = (a_cols == 1) ? 0 : c;  // Broadcast along cols if needed
+        return n2array ? n2array[ar][ac] : n1array[ar * a_cols + ac];
+    };
+    auto getB = [&](int r, int c) -> double {
+        int br = (b_rows == 1) ? 0 : r;  // Broadcast along rows if needed
+        int bc = (b_cols == 1) ? 0 : c;  // Broadcast along cols if needed
+        return other.n2array ? other.n2array[br][bc] : other.n1array[br * b_cols + bc];
+    };
 
     #ifdef _OPENMP
     #pragma omp parallel for
     #endif
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            if (getB(i, j) == static_cast<double>(0)) {
+    for (int i = 0; i < out_rows; ++i) {
+        for (int j = 0; j < out_cols; ++j) {
+            double divisor = getB(i, j);
+            if (divisor == static_cast<double>(0)) {
                 throw std::invalid_argument("Division by zero");
             }
-            result[i][j] = getA(i, j) / getB(i, j);
+            result[i][j] = getA(i, j) / divisor;
         }
     }
-    int* new_shape = new int[2]{rows, cols};
+    int* new_shape = new int[2]{out_rows, out_cols};
     return N2Array(result, new_shape);
 }
 
@@ -341,6 +414,28 @@ N2Array N2Array::operator[](int* indices) {
 
     int* new_shape = new int[2]{1, 1};
     return N2Array(element, new_shape);
+}
+
+double** N2Array::toArray() {
+    int rows = shape[0];
+    int cols = shape[1];
+    double** array = new double*[rows];
+    for (int i = 0; i < rows; ++i) array[i] = new double[cols];
+
+    auto get = [&](int r, int c) -> double {
+        if (n2array) return n2array[r][c];
+        return n1array[r * cols + c];
+    };
+
+    #ifdef _OPENMP
+    #pragma omp parallel for
+    #endif
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            array[i][j] = get(i, j);
+        }
+    }
+    return array;
 }
 
 char* N2Array::toString() {

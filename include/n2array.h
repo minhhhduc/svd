@@ -37,6 +37,9 @@ class N2Array {
         N2Array operator[](int index);
         N2Array operator[](int* indices);
 
+        double** toArray();
+        const int* getShape();
+        
         char* toString();
 };
 

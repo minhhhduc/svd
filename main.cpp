@@ -17,9 +17,6 @@ N2Array testN2Array(double** data, int* shape) {
 	cout << "First row: " << A[0].toString() << endl;
 	cout << "Shape: " << A[0].shape[0] << " x " << A[0].shape[1] << endl;
 
-	cout << "test transpose:\n";
-	cout << "shape: " << A[0].transpose().toString() << endl;
-
 	return A;
 }
 
@@ -31,41 +28,44 @@ void testNumC(N2Array& A) {
 	int* shape = new int[2]{2, 3};
 	N2Array B(arr1d, shape);
 	cout << "NumC arange 1..6 as 2x3:\n" << B.toString() << endl;
-
+	
+	// Test broadcasting operations
+	cout << "\n****Broadcasting tests:****\n";
+	cout << "A (2x3):\n" << A.toString() << endl;
+	cout << "B (2x3):\n" << B.toString() << endl;
+	cout << "A + B (same shape):\n" << (A + B).toString() << endl;
+	
+	// Test broadcasting with 1x3 array (row vector)
+	NumC nc2;
+	double* row_data = nc2.arange(10.0, 13.0); // [10, 11, 12]
+	int* row_shape = new int[2]{1, 3};
+	N2Array C(row_data, row_shape);
+	cout << "\nC (1x3 row vector):\n" << C.toString() << endl;
+	cout << "A + C (broadcasting 1x3 to 2x3):\n" << (A + C).toString() << endl;
+	
+	// Test broadcasting with 2x1 array (column vector)
+	double** col_data = new double*[2];
+	col_data[0] = new double[1]{100.0};
+	col_data[1] = new double[1]{200.0};
+	int* col_shape = new int[2]{2, 1};
+	N2Array D(col_data, col_shape);
+	cout << "\nD (2x1 column vector):\n" << D.toString() << endl;
+	cout << "A + D (broadcasting 2x1 to 2x3):\n" << (A + D).toString() << endl;
+	
+	// Test all operations with broadcasting
+	cout << "\n****All operations with broadcasting:****\n";
+	cout << "A - C:\n" << (A - C).toString() << endl;
+	cout << "A * C:\n" << (A * C).toString() << endl;
+	cout << "A / C (careful with zeros):\n" << (A / C).toString() << endl;
+	
+	// Test axis functionality
 	cout << "\n****Axis functionality tests:****\n";
-	cout << "Original matrix A:\n" << A.toString() << endl;
-	
-	// Test sum with different axes
-	cout << "\nSum tests:\n";
-	cout << "sum(A, axis=-1): " << sum(A).toString() << endl;
-	cout << "sum(A, axis=0): " << sum(A, 0).toString() << endl;
-	cout << "sum(A, axis=1): " << sum(A, 1).toString() << endl;
-	
-	// Test mean with different axes  
-	cout << "\nMean tests:\n";
-	cout << "mean(A, axis=-1): " << mean(A).toString() << endl;
-	cout << "mean(A, axis=0): " << mean(A, 0).toString() << endl;
-	cout << "mean(A, axis=1): " << mean(A, 1).toString() << endl;
-	
-	// Test min/max with different axes
-	cout << "\nMin/Max tests:\n";
-	cout << "min(A, axis=-1): " << min(A).toString() << endl;
-	cout << "min(A, axis=0): " << min(A, 0).toString() << endl;
-	cout << "min(A, axis=1): " << min(A, 1).toString() << endl;
-	
-	cout << "max(A, axis=-1): " << max(A).toString() << endl;
-	cout << "max(A, axis=0): " << max(A, 0).toString() << endl;
-	cout << "max(A, axis=1): " << max(A, 1).toString() << endl;
-	
-	// Test stdev with different axes
-	cout << "\nStandard deviation tests:\n";
-	cout << "stdev(A, axis=-1): " << stdev(A, -1).toString() << endl;
-	cout << "stdev(A, axis=0): " << stdev(A, 0).toString() << endl;
-	cout << "stdev(A, axis=1): " << stdev(A, 1).toString() << endl;
-	
-	// Test default parameter (should be same as axis=-1)
-	cout << "\nDefault parameter test (should equal axis=-1):\n";
-	cout << "stdev(A): " << stdev(A).toString() << endl;
+	cout << "A (2x3):\n" << A.toString() << endl;
+	cout << "Sum all elements (axis=-1): " << sum(A).toString() << endl;
+	cout << "Sum by rows (axis=0): " << sum(A, 0).toString() << endl;
+	cout << "Sum by columns (axis=1): " << sum(A, 1).toString() << endl;
+	cout << "Mean all elements (axis=-1): " << mean(A).toString() << endl;
+	cout << "Mean by rows (axis=0): " << mean(A, 0).toString() << endl;
 }
 
 int main() {
