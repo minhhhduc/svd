@@ -3,7 +3,6 @@ rem buildtest.bat - build all test binaries and run every bin\t_* executable (Wi
 
 setlocal enabledelayedexpansion
 
-echo === building test targets ===
 where mingw32-make >nul 2>&1
 if %ERRORLEVEL%==0 (
 	set MAKE=mingw32-make
@@ -18,7 +17,6 @@ if %ERRORLEVEL%==0 (
 
 %MAKE% test || (echo Build test failed && exit /b 3)
 
-echo === discovering test binaries ===
 set FOUND=0
 for %%F in (bin\t_*) do (
 	if exist "%%F.exe" (
