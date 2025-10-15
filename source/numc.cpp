@@ -22,6 +22,7 @@
  * @return Pointer to the dynamically allocated array of doubles, or nullptr if the range is invalid.
  */
 double* NumC::arange(double start, double stop, double step) {
+    if (step <= 0) throw std::invalid_argument("Step must be positive");
     int n = static_cast<int>((stop - start) / step);
     if (n <= 0) return nullptr;
     
@@ -45,7 +46,7 @@ double* NumC::arange(double start, double stop, double step) {
  * @return Pointer to the dynamically allocated array of doubles, or nullptr if `num` is
  */
 double* NumC::linspace(double start, double stop, int num) {
-    if (num <= 0) return nullptr;
+    if (num <= 0) throw std::invalid_argument("num must be positive");
     if (num == 1) {
         double* result = new double[1];
         result[0] = start;
