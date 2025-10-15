@@ -3,6 +3,6 @@
 #include "n2array.h"
 
 N2Array diag(const N2Array& A);
-N3Array diag(const double* darray, int size);
+N2Array diag(const double** darray, int* shape);
 
 #endif
