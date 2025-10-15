@@ -24,7 +24,7 @@ $(BIN_DIR):
 library:
 	@if not exist library mkdir library
 
-SOURCES_CPP := main.cpp source/n2array.cpp source/numc.cpp
+SOURCES_CPP := main.cpp source/*.cpp
 OBJECTS := $(SOURCES_CPP:.cpp=.o)
 TEST_OBJECTS := $(filter-out main.o,$(OBJECTS))
 
