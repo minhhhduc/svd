@@ -416,6 +416,22 @@ N2Array N2Array::operator[](int* indices) {
     return N2Array(element, new_shape);
 }
 
+double* N2Array::get(int r, int c) {
+    if (r < 0 || r >= shape[0] || c < 0 || c >= shape[1]) {
+        throw std::out_of_range("Index out of range");
+    }
+    if (n2array) return &n2array[r][c];
+    return &n1array[r * shape[1] + c];
+}
+
+const double* N2Array::get(int r, int c) const {
+    if (r < 0 || r >= shape[0] || c < 0 || c >= shape[1]) {
+        throw std::out_of_range("Index out of range");
+    }
+    if (n2array) return &n2array[r][c];
+    return &n1array[r * shape[1] + c];
+}
+
 double** N2Array::toArray() {
     int rows = shape[0];
     int cols = shape[1];
