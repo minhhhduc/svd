@@ -69,12 +69,12 @@ void testNumC(N2Array& A) {
 }
 
 void normalize(N2Array& A) {
-	cout << mean(A, 0).toString() << endl;
-	// double mean = mean(A).n1array[0];
+	N2Array m = mean(A, 0);
+	N2Array sd = stdev(A, 0);
 
 	// double sd = stdev(A).n1array[0];
-	// A = (A - mean) / sd;
-	// cout << "Normalized A:\n" << A.toString() << endl;
+	A = (A - m) / sd;
+	cout << "Normalized A:\n" << A.toString() << endl;
 }
 
 int main() {
