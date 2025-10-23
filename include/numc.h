@@ -7,19 +7,15 @@
 #include <math.h>
 #include "n2array.h"
 
-// NumC class for array creation utilities
-class NumC {
-public:
-    double* arange(double start, double stop, double step = 1.0);
-    double* linspace(double start, double stop, int num = 50);
-    N2Array zeros(int rows, int cols);
-    N2Array ones(int rows, int cols);
-    // int* shape(const int* darray);
-    // int* argsort(const double* darray, int size, int axis=-1);
-    // int* argsort(N2Array arr, int axis=-1);
-};
+/* Create a contiguous 1-D array of doubles: [start, start+step, ..., <stop]
+ * Returns a newly allocated double* or NULL on invalid range. Caller frees.
+ */
+double* numc_arange(double start, double stop, double step);
+/* Create `num` evenly spaced values from start to stop inclusive. Caller frees. */
+double* numc_linspace(double start, double stop, int num);
 
-// Non-templated convenience functions operating on double arrays
+/* Create a new N2Array* filled with zeros. Caller owns and must free. */
+N2Array* numc_zeros(int rows, int cols);
 N2Array dot(const N2Array& a, const N2Array& b);
 N2Array min(const N2Array& a, int axis=-1);
 N2Array max(const N2Array& a, int axis=-1);
