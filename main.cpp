@@ -61,11 +61,11 @@ void testNumC(N2Array& A) {
 	// Test axis functionality
 	cout << "\n****Axis functionality tests:****\n";
 	cout << "A (2x3):\n" << A.toString() << endl;
-	cout << "Sum all elements (axis=-1): " << sum(A).toString() << endl;
-	cout << "Sum by rows (axis=0): " << sum(A, 0).toString() << endl;
-	cout << "Sum by columns (axis=1): " << sum(A, 1).toString() << endl;
-	cout << "Mean all elements (axis=-1): " << mean(A).toString() << endl;
-	cout << "Mean by rows (axis=0): " << mean(A, 0).toString() << endl;
+	cout << "Sum all elements (axis=-1): " << NumC::sum(A).toString() << endl;
+	cout << "Sum by rows (axis=0): " << NumC::sum(A, 0).toString() << endl;
+	cout << "Sum by columns (axis=1): " << NumC::sum(A, 1).toString() << endl;
+	cout << "Mean all elements (axis=-1): " << NumC::mean(A).toString() << endl;
+	cout << "Mean by rows (axis=0): " << NumC::mean(A, 0).toString() << endl;
 }
 
 int main() {

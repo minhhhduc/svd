@@ -117,7 +117,7 @@ N2Array NumC::ones(int rows, int cols) {
  * @return An N2Array object containing the result of the dot product.
  * @throws std::invalid_argument if the shapes are incompatible for multiplication.
  */
-N2Array dot(const N2Array& a, const N2Array& b) {
+N2Array NumC::dot(const N2Array& a, const N2Array& b) {
     if (!a.shape || !b.shape) throw std::invalid_argument("Null shape");
     int a_rows = a.shape[0];
     int a_cols = a.shape[1];
@@ -162,7 +162,7 @@ N2Array dot(const N2Array& a, const N2Array& b) {
  * @return An N2Array object containing the minimum value.
  * @throws std::invalid_argument if the input array has a null shape.
  */
-N2Array min(const N2Array& a, int axis) {
+N2Array NumC::min(const N2Array& a, int axis) {
     if (!a.shape) throw std::invalid_argument("Null shape");
     int rows = a.shape[0];
     int cols = a.shape[1];
@@ -221,7 +221,7 @@ N2Array min(const N2Array& a, int axis) {
  * @return An N2Array object containing the maximum value.
  * @throws std::invalid_argument if the input array has a null shape.
  */
-N2Array max(const N2Array& a, int axis) {
+N2Array NumC::max(const N2Array& a, int axis) {
     if (!a.shape) throw std::invalid_argument("Null shape");
     int rows = a.shape[0];
     int cols = a.shape[1];
@@ -282,7 +282,7 @@ N2Array max(const N2Array& a, int axis) {
  * @return An N2Array object containing the sum.
  * @throws std::invalid_argument if the input array has a null shape or if the axis is invalid.
  */
-N2Array sum(const N2Array& a, int axis) {
+N2Array NumC::sum(const N2Array& a, int axis) {
     if (!a.shape) throw std::invalid_argument("Null shape");
     int rows = a.shape[0];
     int cols = a.shape[1];
@@ -338,20 +338,20 @@ N2Array sum(const N2Array& a, int axis) {
  * @return An N2Array object containing the mean values.
  * @throws std::invalid_argument if the input array has a null shape or if the axis is invalid.
  */
-N2Array mean(const N2Array& a, int axis) {
+N2Array NumC::mean(const N2Array& a, int axis) {
     int rows = a.shape[0];
     int cols = a.shape[1];
     
     if (axis == -1) {
         // Compute mean of entire array
-        N2Array s = sum(a, -1);
+        N2Array s = NumC::sum(a, -1);
         double val = (s.n2array ? s.n2array[0][0] : s.n1array[0]) / static_cast<double>(rows * cols);
         double** out = new double*[1]; out[0] = new double[1]; out[0][0] = val;
         int* shape = new int[2]{1,1};
         return N2Array(out, shape);
     } else if (axis == 0) {
         // Compute mean along rows (result: 1 x cols)
-        N2Array s = sum(a, 0);
+        N2Array s = NumC::sum(a, 0);
         double** result = new double*[1];
         result[0] = new double[cols];
         for (int j = 0; j < cols; ++j) {
@@ -361,7 +361,7 @@ N2Array mean(const N2Array& a, int axis) {
         return N2Array(result, shape);
     } else if (axis == 1) {
         // Compute mean along cols (result: rows x 1)
-        N2Array s = sum(a, 1);
+        N2Array s = NumC::sum(a, 1);
         double** result = new double*[rows];
         for (int i = 0; i < rows; ++i) {
             result[i] = new double[1];
@@ -386,7 +386,7 @@ N2Array mean(const N2Array& a, int axis) {
  * @return An N2Array object containing the standard deviation values.
  * @throws std::invalid_argument if the input array has a null shape or if the axis is invalid.
  */
-N2Array stdev(const N2Array& a, int axis) {
+N2Array NumC::sd(const N2Array& a, int axis) {
     if (!a.shape) throw std::invalid_argument("Null shape");
     int rows = a.shape[0];
     int cols = a.shape[1];
@@ -395,7 +395,7 @@ N2Array stdev(const N2Array& a, int axis) {
     if (axis == -1) {
         // Compute stdev of entire array
         int N = rows * cols;
-        N2Array m = mean(a, -1);
+        N2Array m = NumC::mean(a, -1);
         double meanv = m.n2array ? m.n2array[0][0] : m.n1array[0];
 
         double accum = 0.0;
@@ -411,7 +411,7 @@ N2Array stdev(const N2Array& a, int axis) {
         return N2Array(out, shape);
     } else if (axis == 0) {
         // Compute stdev along rows (result: 1 x cols)
-        N2Array m = mean(a, 0);
+        N2Array m = NumC::mean(a, 0);
         double** result = new double*[1];
         result[0] = new double[cols];
         
@@ -429,7 +429,7 @@ N2Array stdev(const N2Array& a, int axis) {
         return N2Array(result, shape);
     } else if (axis == 1) {
         // Compute stdev along cols (result: rows x 1)
-        N2Array m = mean(a, 1);
+        N2Array m = NumC::mean(a, 1);
         double** result = new double*[rows];
         
         for (int i = 0; i < rows; ++i) {

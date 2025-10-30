@@ -1,5 +1,5 @@
 #include "../include/n2array.h"
-#include "../include/diag.h"
+#include "../include/numc.h"
 #include <stdexcept>
 #include <cstring>
 
@@ -31,7 +31,7 @@ static N2Array extract_diag_from_square(const double** darray, int size) {
     return N2Array(result, new_shape);
 }
 
-N2Array diag(const N2Array& a) {
+N2Array NumC::diag(const N2Array& a) {
     if (!a.shape) throw invalid_argument("Null shape");
     int rows = a.shape[0];
     int cols = a.shape[1];
@@ -81,7 +81,7 @@ N2Array diag(const N2Array& a) {
     throw invalid_argument("Input must be 1D (1xN or Nx1) or square 2D array");
 }
 
-N2Array diag(const double** darray, int* shape) {
+N2Array NumC::diag(const double** darray, int* shape) {
     if (!shape) throw invalid_argument("Null shape");
     int rows = shape[0];
     int cols = shape[1];
