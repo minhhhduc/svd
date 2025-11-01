@@ -5,6 +5,13 @@
 #include <math.h>
 #include <omp.h>
 
+void pair_free(pair* p) {
+    if (!p) return;
+    if (p->first) N2Array_free(p->first);
+    if (p->second) N2Array_free(p->second);
+    free(p);
+}
+
 N2Array* N2Array_from_2d(double** darray, const int* shape) {
     if (!darray || !shape) return NULL;
     int rows = shape[0];
