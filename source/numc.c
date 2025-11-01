@@ -318,67 +318,126 @@ N2Array* diag(N2Array* a) {
     return NULL;
 }
 
-void jacobi_eigen(double** A, double** V, int N, double* eigvals, int MAX_ITER, double EPS) {
-    // Khởi tạo V là ma trận đơn vị
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++)
-            V[i][j] = (i == j) ? 1.0 : 0.0;
+int find_q(double* array, int start, int end) {
+    double max = array[start];
+    int p = start;
+    for (int i = start + 1; i <= end; i++) {
+        if (fabs(array[i]) > fabs(max)) {
+            max = array[i];
+            p = i;
+        }
     }
+    return p;
+}
 
-    for (int iter = 0; iter < MAX_ITER; iter++) {
-        // Tìm phần tử ngoài đường chéo lớn nhất
+
+pair* eigh(const N2Array* a) {
+    if (a->shape[0] != a->shape[1]) return NULL;
+    int n = a->shape[0];
+    
+    // Create work matrix A (copy of input)
+    N2Array* A = N2Array_copy(a);
+    if (!A) return NULL;
+    
+    // Create eigenvectors matrix (initially identity)
+    N2Array* eigenvectors = zeros(n, n);
+    if (!eigenvectors) {
+        N2Array_free(A);
+        return NULL;
+    }
+    for (int i = 0; i < n; ++i) {
+        eigenvectors->n1array[i * n + i] = 1.0;
+    }
+    
+    const double tol = 1e-10;
+    const int max_iter = 1000;
+    
+    // Jacobi iteration
+    for (int iter = 0; iter < max_iter; ++iter) {
+        // Find largest off-diagonal element
+        double max_val = 0.0;
         int p = 0, q = 1;
-        double max = fabs(A[p][q]);
-        for (int i = 0; i < N; i++) {
-            for (int j = i + 1; j < N; j++) {
-                if (fabs(A[i][j]) > max) {
-                    max = fabs(A[i][j]);
+        
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                double val = fabs(N2Array_get(A, i, j));
+                if (val > max_val) {
+                    max_val = val;
                     p = i;
                     q = j;
                 }
             }
         }
-
-        if (max < EPS) break; // hội tụ
-
-        double tau = (A[q][q] - A[p][p]) / (2.0 * A[p][q]);
-        double t = ((tau >= 0) ? 1.0 : -1.0) / (fabs(tau) + sqrt(1.0 + tau * tau));
-        double c = 1.0 / sqrt(1 + t * t);
-        double s = c * t;
-
-        // Lưu lại giá trị cần dùng
-        double app = A[p][p];
-        double aqq = A[q][q];
-
-        // Cập nhật A
-        A[p][p] = c * c * app - 2.0 * s * c * A[p][q] + s * s * aqq;
-        A[q][q] = s * s * app + 2.0 * s * c * A[p][q] + c * c * aqq;
-        A[p][q] = A[q][p] = 0.0;
-
-        for (int i = 0; i < N; i++) {
-            if (i != p && i != q) {
-                double aip = A[i][p];
-                double aiq = A[i][q];
-                A[i][p] = A[p][i] = c * aip - s * aiq;
-                A[i][q] = A[q][i] = s * aip + c * aiq;
+        
+        // Check convergence
+        if (max_val < tol) break;
+        
+        // Calculate rotation angle
+        double app = N2Array_get(A, p, p);
+        double aqq = N2Array_get(A, q, q);
+        double apq = N2Array_get(A, p, q);
+        
+        double theta = 0.5 * atan2(2.0 * apq, aqq - app);
+        double c = cos(theta);
+        double s = sin(theta);
+        
+        // Update A with Givens rotation
+        double new_app = c * c * app + s * s * aqq - 2.0 * s * c * apq;
+        double new_aqq = s * s * app + c * c * aqq + 2.0 * s * c * apq;
+        
+        N2Array_set(A, p, p, new_app);
+        N2Array_set(A, q, q, new_aqq);
+        N2Array_set(A, p, q, 0.0);
+        N2Array_set(A, q, p, 0.0);
+        
+        // Update off-diagonal elements
+        for (int k = 0; k < n; ++k) {
+            if (k != p && k != q) {
+                double akp = N2Array_get(A, k, p);
+                double akq = N2Array_get(A, k, q);
+                double new_kp = c * akp - s * akq;
+                double new_kq = s * akp + c * akq;
+                N2Array_set(A, k, p, new_kp);
+                N2Array_set(A, p, k, new_kp);
+                N2Array_set(A, k, q, new_kq);
+                N2Array_set(A, q, k, new_kq);
             }
         }
-
-        // Cập nhật ma trận vector riêng V
-        for (int i = 0; i < N; i++) {
-            double vip = V[i][p];
-            double viq = V[i][q];
-            V[i][p] = c * vip - s * viq;
-            V[i][q] = s * vip + c * viq;
+        
+        // Update eigenvectors
+        #pragma omp parallel for schedule(static)
+        for (int i = 0; i < n; ++i) {
+            double vip = N2Array_get(eigenvectors, i, p);
+            double viq = N2Array_get(eigenvectors, i, q);
+            N2Array_set(eigenvectors, i, p, c * vip - s * viq);
+            N2Array_set(eigenvectors, i, q, s * vip + c * viq);
         }
     }
-
-    // Lấy giá trị riêng
-    for (int i = 0; i < N; i++)
-        eigvals[i] = A[i][i];
-}
-
-pair* eigh(const N2Array* a) {
-    if (a->shape[0] != a->shape[1]) return NULL; // Chỉ áp dụng cho ma trận vuông
-    int n = a->shape[0];
+    
+    // Extract eigenvalues and store in first (as diagonal matrix) and eigenvectors in second
+    N2Array* eigenvalues_diag = zeros(n, 1);
+    if (!eigenvalues_diag) {
+        N2Array_free(A);
+        N2Array_free(eigenvectors);
+        return NULL;
+    }
+    
+    for (int i = 0; i < n; ++i) {
+        eigenvalues_diag->n1array[i] = N2Array_get(A, i, i);
+    }
+    
+    // Free temporary matrix
+    N2Array_free(A);
+    
+    // Create and return result pair
+    pair* result = (pair*)malloc(sizeof(pair));
+    if (!result) {
+        N2Array_free(eigenvalues_diag);
+        N2Array_free(eigenvectors);
+        return NULL;
+    }
+    result->first = eigenvalues_diag;   // eigenvalues as 1D array (nx1)
+    result->second = eigenvectors;      // eigenvectors as nxn matrix
+    
+    return result;
 }
