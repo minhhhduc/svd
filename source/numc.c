@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <omp.h>
+#ifdef USE_OPENCL
+#include "../include/opencl_helper.h"
+#endif
 #include "../include/n2array.h"
 
 double* arange(double start, double stop, double step) {
@@ -11,7 +13,6 @@ double* arange(double start, double stop, double step) {
     if (n <= 0) return NULL;
     double* out = (double*)malloc(sizeof(double) * n);
     if (!out) return NULL;
-    #pragma omp parallel for
     for (int i = 0; i < n; ++i) out[i] = start + i * step;
     return out;
 }
@@ -25,7 +26,6 @@ double* linspace(double start, double stop, int num) {
         return out;
     }
     double step = (stop - start) / (double)(num - 1);
-    #pragma omp parallel for
     for (int i = 0; i < num; ++i) out[i] = start + i * step;
     return out;
 }
@@ -37,7 +37,6 @@ N2Array* zeros(int rows, int cols) {
     if (!data) return NULL;
     double** rows_ptr = (double**)malloc(sizeof(double*) * (size_t)rows);
     if (!rows_ptr) { free(data); return NULL; }
-    #pragma omp parallel for
     for (int i = 0; i < rows; ++i) rows_ptr[i] = data + (size_t)i * cols;
 
      int* shape = (int*)malloc(sizeof(int) * 2);
@@ -55,11 +54,9 @@ N2Array* ones(int rows, int cols) {
     if (rows <= 0 || cols <= 0) return NULL;
     double* data = (double*)malloc((size_t)rows * cols * sizeof(double));
     if (!data) return NULL;
-    #pragma omp parallel for
     for (int i = 0; i < rows * cols; ++i) data[i] = 1.0;
     double** rows_ptr = (double**)malloc(sizeof(double*) * (size_t)rows);
     if (!rows_ptr) { free(data); return NULL; }
-    #pragma omp parallel for
     for (int i = 0; i < rows; ++i) rows_ptr[i] = data + (size_t)i * cols;
     int* shape = (int*)malloc(sizeof(int) * 2);
     shape[0] = rows; shape[1] = cols;
@@ -413,6 +410,7 @@ pair* eigh(const N2Array* a) {
             N2Array_set(eigenvectors, i, q, s * vip + c * viq);
         }
     }
+<<<<<<< HEAD
     
     // Extract eigenvalues and store in first (as diagonal matrix) and eigenvectors in second
     N2Array* eigenvalues_diag = zeros(n, 1);
@@ -441,3 +439,15 @@ pair* eigh(const N2Array* a) {
     
     return result;
 }
+=======
+
+    // Lấy giá trị riêng
+    for (int i = 0; i < N; i++)
+        eigvals[i] = A[i][i];
+}
+
+pair* eigh(const N2Array* a) {
+    if (a->shape[0] != a->shape[1]) return NULL; // Chỉ áp dụng cho ma trận vuông
+    int n = a->shape[0];
+}
+>>>>>>> 0d8fa0da9b936f2c7252f244c065a3c9d1951d76

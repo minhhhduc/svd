@@ -1,6 +1,5 @@
 #ifndef NUMC_H
 #define NUMC_H
-#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
