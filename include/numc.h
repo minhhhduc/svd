@@ -9,11 +9,12 @@
 /* Create a contiguous 1-D array of doubles: [start, start+step, ..., <stop]
  * Returns a newly allocated double* or NULL on invalid range. Caller frees.
  */
-double* numc_arange(double start, double stop, double step);
+double* arange(double start, double stop, double step);
 /* Create `num` evenly spaced values from start to stop inclusive. Caller frees. */
-double* numc_linspace(double start, double stop, int num);
+double* linspace(double start, double stop, int num);
 
 /* Create a new N2Array* filled with zeros. Caller owns and must free. */
+<<<<<<< HEAD
 N2Array* numc_zeros(int rows, int cols);
 /* Create a new N2Array* filled with ones. Caller owns and must free. */
 N2Array* numc_ones(int rows, int cols);
@@ -27,4 +28,19 @@ N2Array* numc_stdev(const N2Array* a, int axis);
 // N2Array arange(int start, int end, int step=1);
 // N2Array arange(int end, int step=1);
 // N2Array linspace(int start, int end, int num=50);
+=======
+N2Array* zeros(int rows, int cols);
+N2Array* ones(int rows, int cols);
+N2Array* dot(const N2Array* a, const N2Array* b);
+N2Array* min(const N2Array* a, int axis);
+N2Array* max(const N2Array* a, int axis);
+N2Array* sum(const N2Array* a, int axis);
+N2Array* mean(const N2Array* a, int axis);
+N2Array* stdev(const N2Array* a, int axis);
+N2Array* transpose(const N2Array* a);
+N2Array* diag(const N2Array* a); // extract diagonal or create diagonal matrix
+pair* eig(const N2Array* a); // reduced norm jacobi method
+pair* eigh(const N2Array* a); // jacobi method for symmetric matrices
+
+>>>>>>> 7ca499852034ea837c070b888569b73cc6eadf80
 #endif

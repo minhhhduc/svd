@@ -4,12 +4,18 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
-typedef struct N2Array {
+typedef struct {
     double** n2array;    /* per-row pointers, or NULL */
     const int* shape;    /* pointer to two ints: rows, cols (owned by struct) */
     double* n1array;     /* contiguous buffer (row-major), or NULL */
 } N2Array;
+
+typedef struct {
+    N2Array* first;
+    N2Array* second;
+} pair;
+
+void pair_free(pair* p);
 
 /* Creation / destruction (functions take ownership of passed buffers) */
 N2Array* N2Array_from_2d(double** darray, const int* shape);

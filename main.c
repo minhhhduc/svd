@@ -5,6 +5,7 @@
 
 
 int main() {
+<<<<<<< HEAD
     printf("N2Array Test\n");
     // from 1d
     double arr_data[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
@@ -193,5 +194,10 @@ int main() {
     }   
 
     // numc
+=======
+    N2Array* zero = zeros(2, 3);
+    printf("Zero array:\n%s\n", N2Array_to_string(zero));
+    N2Array_free(zero);
+>>>>>>> 7ca499852034ea837c070b888569b73cc6eadf80
     return 0;
 }
