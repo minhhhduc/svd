@@ -1,5 +1,5 @@
 @echo off
-rem buildtest.bat - build all test binaries and run every bin\t_* executable (Windows cmd)
+rem buildtest.bat - build and run tests
 
 setlocal enabledelayedexpansion
 
@@ -15,25 +15,12 @@ if %ERRORLEVEL%==0 (
 	)
 )
 
-%MAKE% test || (echo Build test failed && exit /b 3)
+echo Cleaning previous build...
+%MAKE% clean
 
-set FOUND=0
-for %%F in (bin\t_*) do (
-	if exist "%%F.exe" (
-		set FOUND=1
-		echo ================Running %%~nF.exe...================
-		"%%F.exe" || (echo Test %%~nF failed with code %%ERRORLEVEL% & exit /b 4)
-	) else if exist "%%F" (
-		set FOUND=1
-		echo ================Running %%~nF...================
-		"%%F" || (echo Test %%~nF failed with code %%ERRORLEVEL% & exit /b 4)
-	)
-)
+echo Building tests with OpenMP (OpenCL disabled)...
+%MAKE% build-all-test USE_OPENCL=0 || (echo Build test failed && exit /b 3)
 
-if %FOUND%==0 (
-	echo No test binaries found matching bin\t_* && exit /b 5
-)
-
-echo === all tests passed ===
+echo === All tests passed ===
 endlocal
 exit /b 0

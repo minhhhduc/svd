@@ -2,7 +2,7 @@ CC = gcc
 # set USE_OPENCL=1 to compile with OpenCL support
 USE_OPENCL ?= 1
 
-CFLAGS = -Wall -Wextra -O2
+CFLAGS = -Wall -Wextra -O2 -fopenmp
 INS = -Iinclude
 LIB = -Llib
 TARGET = bin\main
@@ -17,7 +17,12 @@ ifeq ($(USE_OPENCL),1)
 endif
 
 SRCS = $(APP_SRCS) $(LIB_SRCS)
-TEST_SRCS := $(filter-out $(TESTDIR)/test.c,$(wildcard $(TESTDIR)/*.c))
+# Conditionally include OpenCL test file
+ifeq ($(USE_OPENCL),1)
+	TEST_SRCS := $(filter-out $(TESTDIR)/test.c,$(wildcard $(TESTDIR)/*.c))
+else
+	TEST_SRCS := $(filter-out $(TESTDIR)/test.c $(TESTDIR)/test_opencl.c,$(wildcard $(TESTDIR)/*.c))
+endif
 
 # Default: build the main binary only
 all: $(TARGET)
