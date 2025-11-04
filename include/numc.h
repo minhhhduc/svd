@@ -1,6 +1,5 @@
 #ifndef NUMC_H
 #define NUMC_H
-#include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +15,8 @@ double* numc_linspace(double start, double stop, int num);
 
 /* Create a new N2Array* filled with zeros. Caller owns and must free. */
 N2Array* numc_zeros(int rows, int cols);
+/* Create a new N2Array* filled with ones. Caller owns and must free. */
+N2Array* numc_ones(int rows, int cols);
 N2Array* numc_dot(const N2Array* a, const N2Array* b);
 N2Array* numc_min(const N2Array* a, int axis);
 N2Array* numc_max(const N2Array* a, int axis);

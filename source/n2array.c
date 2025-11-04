@@ -3,7 +3,6 @@
 #include "../include/n2array.h"
 #include <stdio.h>
 #include <math.h>
-#include <omp.h>
 
 N2Array* N2Array_from_2d(double** darray, const int* shape) {
     if (!darray || !shape) return NULL;
@@ -17,7 +16,6 @@ N2Array* N2Array_from_2d(double** darray, const int* shape) {
     double* data = (double*)malloc(sizeof(double) * (size_t)(rows * cols));
     if (!data) { free(arr); return NULL; }
 
-    #pragma omp parallel for
     for (int i = 0; i < rows; ++i) {
         memcpy(data + (size_t)i * cols, darray[i], sizeof(double) * (size_t)cols);
     }
@@ -25,7 +23,6 @@ N2Array* N2Array_from_2d(double** darray, const int* shape) {
     double** rows_ptr = (double**)malloc(sizeof(double*) * (size_t)rows);
     if (!rows_ptr) { free(data); free(arr); return NULL; }
 
-    #pragma omp parallel for
     for (int i = 0; i < rows; ++i) {
         rows_ptr[i] = data + (size_t)i * cols;
     }
@@ -47,25 +44,26 @@ N2Array* N2Array_from_1d(double* darray, const int* shape) {
     int rows = shape[0];
     int cols = shape[1];
     if (rows <= 0 || cols <= 0) return NULL;
-
+    /* Make an owned copy of the provided 1D buffer so the returned N2Array
+       owns its memory and can be safely freed even if the caller passed
+       stack-allocated data. */
     N2Array* arr = (N2Array*)malloc(sizeof(N2Array));
     if (!arr) return NULL;
+    double* data = (double*)malloc(sizeof(double) * (size_t)rows * cols);
+    if (!data) { free(arr); return NULL; }
+    memcpy(data, darray, sizeof(double) * (size_t)rows * cols);
 
     double** rows_ptr = (double**)malloc(sizeof(double*) * (size_t)rows);
-    if (!rows_ptr) { free(arr); return NULL; }
-
-    #pragma omp parallel for
-    for (int i = 0; i < rows; ++i) {
-        rows_ptr[i] = darray + (size_t)i * cols;
-    }
+    if (!rows_ptr) { free(data); free(arr); return NULL; }
+    for (int i = 0; i < rows; ++i) rows_ptr[i] = data + (size_t)i * cols;
 
     int* shape_copy = (int*)malloc(sizeof(int) * 2);
-    if (!shape_copy) { free(rows_ptr); free(arr); return NULL; }
+    if (!shape_copy) { free(rows_ptr); free(data); free(arr); return NULL; }
     shape_copy[0] = rows;
     shape_copy[1] = cols;
 
     arr->n2array = rows_ptr;
-    arr->n1array = darray;
+    arr->n1array = data;
     arr->shape = shape_copy;
 
     return arr;
