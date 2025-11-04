@@ -410,7 +410,6 @@ pair* eigh(const N2Array* a) {
             N2Array_set(eigenvectors, i, q, s * vip + c * viq);
         }
     }
-<<<<<<< HEAD
     
     // Extract eigenvalues and store in first (as diagonal matrix) and eigenvectors in second
     N2Array* eigenvalues_diag = zeros(n, 1);
@@ -439,15 +438,3 @@ pair* eigh(const N2Array* a) {
     
     return result;
 }
-=======
-
-    // Lấy giá trị riêng
-    for (int i = 0; i < N; i++)
-        eigvals[i] = A[i][i];
-}
-
-pair* eigh(const N2Array* a) {
-    if (a->shape[0] != a->shape[1]) return NULL; // Chỉ áp dụng cho ma trận vuông
-    int n = a->shape[0];
-}
->>>>>>> 0d8fa0da9b936f2c7252f244c065a3c9d1951d76
