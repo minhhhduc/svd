@@ -1,9 +1,10 @@
 @echo off
-mingw32-make clean
-mingw32-make all USE_OPENCL=0
-if %ERRORLEVEL% neq 0 (
+REM Build and run main executable
+echo Building main...
+make main
+if %errorlevel% neq 0 (
     echo Build failed!
-    exit /b 1
+    exit /b %errorlevel%
 )
-echo Build successful! Running main program...
-.\bin\main.exe
+echo Running main...
+bin\main.exe

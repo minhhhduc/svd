@@ -1,25 +1,27 @@
 @echo off
-rem buildtest.bat - build and run tests
-
-setlocal enabledelayedexpansion
-
-where mingw32-make >nul 2>&1
-if %ERRORLEVEL%==0 (
-	set MAKE=mingw32-make
-) else (
-	where make >nul 2>&1
-	if %ERRORLEVEL%==0 (
-		set MAKE=make
-	) else (
-		echo Neither mingw32-make nor make found in PATH. && exit /b 2
+REM Build and run all test executables
+make tests
+if %errorlevel% neq 0 (
+    echo Build failed!
+    exit /b %errorlevel%
+)
+for %%F in (bin\_*.exe) do (
+	echo.
+	echo.
+    echo =======%%~nF=======
+    %%F
+    if %errorlevel% neq 0 (
+        echo Test %%~nF failed with code %errorlevel%
+    )
+)
+			set TEST_FAILED=1
+		)
 	)
 )
 
-echo Cleaning previous build...
-%MAKE% clean
-
-echo Building tests with OpenMP (OpenCL disabled)...
-%MAKE% build-all-test USE_OPENCL=0 || (echo Build test failed && exit /b 3)
+if %TEST_FAILED%==1 (
+	echo Some tests failed && exit /b 6
+)
 
 echo === All tests passed ===
 endlocal
