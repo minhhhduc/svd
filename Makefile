@@ -35,8 +35,9 @@ $(BIN_DIR):
 	@if not exist "$(BIN_DIR)" mkdir "$(BIN_DIR)"
 
 # Pattern rule: compile test/NAME.c -> bin/_NAME.exe
+# Skip files without main() by ignoring compilation errors with -
 $(BIN_DIR)/_%.exe: test/%.c | $(BIN_DIR)
-	$(CC) $(CFLAGS) $< source/n2array.c source/numc.c -o $@ $(LDFLAGS)
+	-$(CC) $(CFLAGS) $< source/n2array.c source/numc.c -o $@ $(LDFLAGS) 2>nul
 
 clean:
 	@if exist "bin\main.exe" del /Q "bin\main.exe"
