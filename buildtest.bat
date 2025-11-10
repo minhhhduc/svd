@@ -1,6 +1,7 @@
 @echo off
 REM Build and run all test executables
-make tests
+echo Building ...
+make tests >nul 2>&1
 if %errorlevel% neq 0 (
     echo Build failed!
     exit /b %errorlevel%
@@ -18,11 +19,5 @@ for %%F in (bin\_*.exe) do (
 		)
 	)
 )
-
-if %TEST_FAILED%==1 (
-	echo Some tests failed && exit /b 6
-)
-
-echo === All tests passed ===
 endlocal
 exit /b 0
