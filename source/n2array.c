@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <omp.h>
 #include "../include/n2array.h"
 #include <stdio.h>
 #include <math.h>
@@ -196,6 +197,7 @@ N2Array* N2Array_sub(const N2Array* A, const N2Array* B) {
     if (a_rows != b_rows || a_cols != b_cols) return NULL;
     N2Array* out = n2array_alloc_empty(a_rows, a_cols);
     if (!out) return NULL;
+    #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < a_rows; ++i) for (int j = 0; j < a_cols; ++j) {
         double va = A->n2array ? A->n2array[i][j] : A->n1array[(size_t)i * a_cols + j];
         double vb = B->n2array ? B->n2array[i][j] : B->n1array[(size_t)i * b_cols + j];
@@ -211,6 +213,7 @@ N2Array* N2Array_mul(const N2Array* A, const N2Array* B) {
     if (a_rows != b_rows || a_cols != b_cols) return NULL;
     N2Array* out = n2array_alloc_empty(a_rows, a_cols);
     if (!out) return NULL;
+    #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < a_rows; ++i) for (int j = 0; j < a_cols; ++j) {
         double va = A->n2array ? A->n2array[i][j] : A->n1array[(size_t)i * a_cols + j];
         double vb = B->n2array ? B->n2array[i][j] : B->n1array[(size_t)i * b_cols + j];
@@ -226,6 +229,7 @@ N2Array* N2Array_div(const N2Array* A, const N2Array* B) {
     if (a_rows != b_rows || a_cols != b_cols) return NULL;
     N2Array* out = n2array_alloc_empty(a_rows, a_cols);
     if (!out) return NULL;
+    #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < a_rows; ++i) for (int j = 0; j < a_cols; ++j) {
         double va = A->n2array ? A->n2array[i][j] : A->n1array[(size_t)i * a_cols + j];
         double vb = B->n2array ? B->n2array[i][j] : B->n1array[(size_t)i * b_cols + j];
@@ -239,6 +243,7 @@ N2Array* N2Array_add_scalar(const N2Array* A, double scalar) {
     int rows = A->shape[0], cols = A->shape[1];
     N2Array* out = n2array_alloc_empty(rows, cols);
     if (!out) return NULL;
+    #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < rows; ++i) for (int j = 0; j < cols; ++j) {
         double va = A->n2array ? A->n2array[i][j] : A->n1array[(size_t)i * cols + j];
         out->n1array[(size_t)i * cols + j] = va + scalar;
@@ -251,6 +256,7 @@ N2Array* N2Array_sub_scalar(const N2Array* A, double scalar) {
     int rows = A->shape[0], cols = A->shape[1];
     N2Array* out = n2array_alloc_empty(rows, cols);
     if (!out) return NULL;
+    #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < rows; ++i) for (int j = 0; j < cols; ++j) {
         double va = A->n2array ? A->n2array[i][j] : A->n1array[(size_t)i * cols + j];
         out->n1array[(size_t)i * cols + j] = va - scalar;
@@ -263,6 +269,7 @@ N2Array* N2Array_mul_scalar(const N2Array* A, double scalar) {
     int rows = A->shape[0], cols = A->shape[1];
     N2Array* out = n2array_alloc_empty(rows, cols);
     if (!out) return NULL;
+    #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < rows; ++i) for (int j = 0; j < cols; ++j) {
         double va = A->n2array ? A->n2array[i][j] : A->n1array[(size_t)i * cols + j];
         out->n1array[(size_t)i * cols + j] = va * scalar;
@@ -276,6 +283,7 @@ N2Array* N2Array_div_scalar(const N2Array* A, double scalar) {
     int rows = A->shape[0], cols = A->shape[1];
     N2Array* out = n2array_alloc_empty(rows, cols);
     if (!out) return NULL;
+    #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < rows; ++i) for (int j = 0; j < cols; ++j) {
         double va = A->n2array ? A->n2array[i][j] : A->n1array[(size_t)i * cols + j];
         out->n1array[(size_t)i * cols + j] = va / scalar;
