@@ -2,9 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#ifdef USE_OPENCL
-#include "../include/opencl_helper.h"
-#endif
+#include <omp.h>
 #include "../include/n2array.h"
 
 double* arange(double start, double stop, double step) {
@@ -13,6 +11,7 @@ double* arange(double start, double stop, double step) {
     if (n <= 0) return NULL;
     double* out = (double*)malloc(sizeof(double) * n);
     if (!out) return NULL;
+    #pragma omp parallel for schedule(static)
     for (int i = 0; i < n; ++i) out[i] = start + i * step;
     return out;
 }
@@ -26,6 +25,7 @@ double* linspace(double start, double stop, int num) {
         return out;
     }
     double step = (stop - start) / (double)(num - 1);
+    #pragma omp parallel for schedule(static)
     for (int i = 0; i < num; ++i) out[i] = start + i * step;
     return out;
 }
@@ -54,6 +54,7 @@ N2Array* ones(int rows, int cols) {
     if (rows <= 0 || cols <= 0) return NULL;
     double* data = (double*)malloc((size_t)rows * cols * sizeof(double));
     if (!data) return NULL;
+    #pragma omp parallel for schedule(static)
     for (int i = 0; i < rows * cols; ++i) data[i] = 1.0;
     double** rows_ptr = (double**)malloc(sizeof(double*) * (size_t)rows);
     if (!rows_ptr) { free(data); return NULL; }
@@ -76,6 +77,7 @@ N2Array* sum(const N2Array* a, int axis) {
     if (axis == -1) {
         /* sum all elements -> return 1x1 array */
         double s = 0.0;
+        #pragma omp parallel for reduction(+:s) collapse(2)
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < cols; ++j) {
                 s += N2Array_get(a, i, j);
@@ -88,6 +90,7 @@ N2Array* sum(const N2Array* a, int axis) {
         /* sum along rows -> return 1xN array */
         N2Array* out = zeros(1, cols);
         if (!out) return NULL;
+        #pragma omp parallel for schedule(static)
         for (int j = 0; j < cols; ++j) {
             double s = 0.0;
             for (int i = 0; i < rows; ++i) s += N2Array_get(a, i, j);
@@ -98,6 +101,7 @@ N2Array* sum(const N2Array* a, int axis) {
         /* sum along cols -> return Nx1 array */
         N2Array* out = zeros(rows, 1);
         if (!out) return NULL;
+        #pragma omp parallel for schedule(static)
         for (int i = 0; i < rows; ++i) {
             double s = 0.0;
             for (int j = 0; j < cols; ++j) s += N2Array_get(a, i, j);
@@ -228,6 +232,7 @@ N2Array* stdev(const N2Array* a, int axis) {
         if (out) {
             double mean_val = m->n1array[0];
             double accum = 0.0;
+            #pragma omp parallel for reduction(+:accum) collapse(2)
             for (int i = 0; i < rows; ++i) {
                 for (int j = 0; j < cols; ++j) {
                     double d = N2Array_get(a, i, j) - mean_val;
@@ -239,6 +244,7 @@ N2Array* stdev(const N2Array* a, int axis) {
     } else if (axis == 0) {
         out = zeros(1, cols);
         if (out) {
+            #pragma omp parallel for schedule(static)
             for (int j = 0; j < cols; ++j) {
                 double mean_val = m->n1array[j];
                 double accum = 0.0;
@@ -252,6 +258,7 @@ N2Array* stdev(const N2Array* a, int axis) {
     } else if (axis == 1) {
         out = zeros(rows, 1);
         if (out) {
+            #pragma omp parallel for schedule(static)
             for (int i = 0; i < rows; ++i) {
                 double mean_val = m->n1array[i];
                 double accum = 0.0;
@@ -277,6 +284,7 @@ N2Array* dot(const N2Array* a, const N2Array* b) {
     N2Array* out = zeros(a_rows, b_cols);
     if (!out) return NULL;
     
+    #pragma omp parallel for collapse(2) schedule(static)
     for (int i = 0; i < a_rows; ++i) {
         for (int j = 0; j < b_cols; ++j) {
             double sum = 0.0;
@@ -402,7 +410,6 @@ pair* eigh(const N2Array* a) {
         }
         
         // Update eigenvectors
-        #pragma omp parallel for schedule(static)
         for (int i = 0; i < n; ++i) {
             double vip = N2Array_get(eigenvectors, i, p);
             double viq = N2Array_get(eigenvectors, i, q);
@@ -435,6 +442,188 @@ pair* eigh(const N2Array* a) {
     }
     result->first = eigenvalues_diag;   // eigenvalues as 1D array (nx1)
     result->second = eigenvectors;      // eigenvectors as nxn matrix
+    
+    return result;
+}
+
+/* QR decomposition using Householder reflections */
+static void qr_decompose(const N2Array* A, N2Array** Q_out, N2Array** R_out) {
+    if (!A || !A->shape) return;
+    int m = A->shape[0];
+    int n = A->shape[1];
+    
+    N2Array* R = N2Array_copy(A);
+    N2Array* Q = zeros(m, m);
+    if (!R || !Q) {
+        if (R) N2Array_free(R);
+        if (Q) N2Array_free(Q);
+        return;
+    }
+    
+    // Initialize Q as identity
+    for (int i = 0; i < m; ++i) {
+        N2Array_set(Q, i, i, 1.0);
+    }
+    
+    int k_max = (m < n) ? m : n;
+    for (int k = 0; k < k_max; ++k) {
+        // Compute Householder vector for column k
+        double norm = 0.0;
+        for (int i = k; i < m; ++i) {
+            double val = N2Array_get(R, i, k);
+            norm += val * val;
+        }
+        norm = sqrt(norm);
+        
+        if (norm < 1e-15) continue;
+        
+        double r_kk = N2Array_get(R, k, k);
+        double sign = (r_kk >= 0) ? 1.0 : -1.0;
+        double u_k = r_kk + sign * norm;
+        
+        // Create Householder vector u
+        double* u = (double*)calloc(m, sizeof(double));
+        if (!u) continue;
+        
+        u[k] = 1.0;
+        for (int i = k + 1; i < m; ++i) {
+            u[i] = N2Array_get(R, i, k) / u_k;
+        }
+        
+        // Compute scale factor
+        double beta = 2.0 / (1.0 + norm * norm / (u_k * u_k));
+        
+        // Apply Householder transformation to R: R = (I - beta*u*u^T)*R
+        for (int j = k; j < n; ++j) {
+            double dot = 0.0;
+            for (int i = k; i < m; ++i) {
+                dot += u[i] * N2Array_get(R, i, j);
+            }
+            for (int i = k; i < m; ++i) {
+                double r_ij = N2Array_get(R, i, j);
+                N2Array_set(R, i, j, r_ij - beta * u[i] * dot);
+            }
+        }
+        
+        // Apply Householder transformation to Q: Q = Q*(I - beta*u*u^T)
+        for (int i = 0; i < m; ++i) {
+            double dot = 0.0;
+            for (int j = k; j < m; ++j) {
+                dot += N2Array_get(Q, i, j) * u[j];
+            }
+            for (int j = k; j < m; ++j) {
+                double q_ij = N2Array_get(Q, i, j);
+                N2Array_set(Q, i, j, q_ij - beta * dot * u[j]);
+            }
+        }
+        
+        free(u);
+    }
+    
+    *Q_out = Q;
+    *R_out = R;
+}
+
+/* Eigenvalue decomposition for general matrices using QR algorithm */
+pair* eig(const N2Array* a) {
+    if (!a || !a->shape) return NULL;
+    if (a->shape[0] != a->shape[1]) return NULL;
+    
+    int n = a->shape[0];
+    
+    // Create work matrix A (copy of input)
+    N2Array* A = N2Array_copy(a);
+    if (!A) return NULL;
+    
+    // Create eigenvectors accumulator (initially identity)
+    N2Array* V = zeros(n, n);
+    if (!V) {
+        N2Array_free(A);
+        return NULL;
+    }
+    for (int i = 0; i < n; ++i) {
+        N2Array_set(V, i, i, 1.0);
+    }
+    
+    const int max_iter = 1000;
+    const double tol = 1e-10;
+    
+    // QR iteration
+    for (int iter = 0; iter < max_iter; ++iter) {
+        // Check for convergence (off-diagonal elements should be small)
+        double off_diag_norm = 0.0;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (i != j) {
+                    double val = N2Array_get(A, i, j);
+                    off_diag_norm += val * val;
+                }
+            }
+        }
+        if (sqrt(off_diag_norm) < tol) break;
+        
+        // Perform QR decomposition: A = QR
+        N2Array* Q = NULL;
+        N2Array* R = NULL;
+        qr_decompose(A, &Q, &R);
+        
+        if (!Q || !R) {
+            if (Q) N2Array_free(Q);
+            if (R) N2Array_free(R);
+            N2Array_free(A);
+            N2Array_free(V);
+            return NULL;
+        }
+        
+        // Update A = RQ
+        N2Array_free(A);
+        A = dot(R, Q);
+        if (!A) {
+            N2Array_free(Q);
+            N2Array_free(R);
+            N2Array_free(V);
+            return NULL;
+        }
+        
+        // Accumulate eigenvectors: V = V * Q
+        N2Array* V_new = dot(V, Q);
+        if (!V_new) {
+            N2Array_free(Q);
+            N2Array_free(R);
+            N2Array_free(A);
+            N2Array_free(V);
+            return NULL;
+        }
+        N2Array_free(V);
+        V = V_new;
+        
+        N2Array_free(Q);
+        N2Array_free(R);
+    }
+    
+    // Extract eigenvalues from diagonal
+    N2Array* eigenvalues = zeros(n, 1);
+    if (!eigenvalues) {
+        N2Array_free(A);
+        N2Array_free(V);
+        return NULL;
+    }
+    
+    for (int i = 0; i < n; ++i) {
+        eigenvalues->n1array[i] = N2Array_get(A, i, i);
+    }
+    
+    N2Array_free(A);
+    
+    // Create and return result pair
+    pair* result = (pair*)malloc(sizeof(pair));
+    if (!result) {
+        N2Array_free(eigenvalues);
+        N2Array_free(V);
+        return NULL;
+    }
+    result->first = eigenvalues;    // eigenvalues as nx1 array
+    result->second = V;             // eigenvectors as nxn matrix
     
     return result;
 }

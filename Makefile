@@ -1,55 +1,50 @@
-CC = gcc
-# set USE_OPENCL=1 to compile with OpenCL support
-USE_OPENCL ?= 1
+## Simple Makefile for building main and test executables on Windows (cmd.exe)
 
-CFLAGS = -Wall -Wextra -O2 -fopenmp
-INS = -Iinclude
-LIB = -Llib
-TARGET = bin\main
-TESTDIR = test
+CC := gcc
+CFLAGS := -Iinclude -std=c11 -Wall -O2 -fopenmp
+LDFLAGS := -lm -fopenmp
+SHELL := C:/Windows/System32/cmd.exe
+.SHELLFLAGS := /c
 
-APP_SRCS = main.c
-LIB_SRCS = source/n2array.c source/numc.c
-ifeq ($(USE_OPENCL),1)
-	CFLAGS += -DUSE_OPENCL -Iinclude/CL
-	OPENCL_LIBS = -lOpenCL
-	LIB_SRCS += source/opencl_helper.c
-endif
+# Binary output directory
+BIN_DIR := bin
 
-SRCS = $(APP_SRCS) $(LIB_SRCS)
-# Conditionally include OpenCL test file
-ifeq ($(USE_OPENCL),1)
-	TEST_SRCS := $(filter-out $(TESTDIR)/test.c,$(wildcard $(TESTDIR)/*.c))
-else
-	TEST_SRCS := $(filter-out $(TESTDIR)/test.c $(TESTDIR)/test_opencl.c,$(wildcard $(TESTDIR)/*.c))
-endif
+# Main target: build main.c -> bin/main.exe
+MAIN_SRCS := main.c source/n2array.c source/numc.c
+MAIN_BIN := $(BIN_DIR)/main.exe
 
-# Default: build the main binary only
-all: $(TARGET)
+# Tests: each test/*.c -> _<basename>.exe (e.g. test/test_numc.c -> _test_numc.exe)
+TEST_SRCS := $(wildcard test/*.c)
+# Each test/NAME.c -> bin/_NAME.exe
+TEST_BINS := $(patsubst test/%.c,$(BIN_DIR)/_%.exe,$(TEST_SRCS))
 
-$(TARGET): $(SRCS)
-	$(CC) $(CFLAGS) $(INS) -o $(TARGET) $(SRCS) $(LIB) $(OPENCL_LIBS)
+.PHONY: all main tests test clean
 
-# Build the test binary (but don't run it)
-$(TESTDIR)/test: $(TEST_SRCS)
-	$(CC) $(CFLAGS) $(INS) -o $(TESTDIR)/test $(TEST_SRCS) $(LIB) $(LIB_SRCS) $(OPENCL_LIBS)
+all: main
 
-# Run tests (builds test binary first if needed)
-test: $(TESTDIR)/test
-	@echo Running tests... && "$(TESTDIR)\\test.exe"
+main: $(MAIN_BIN)
 
-# Convenience target: build everything and run tests
-build-all-test: $(TARGET) $(TESTDIR)/test
-	@echo Build complete. Running tests... && "$(TESTDIR)\\test.exe"
 
-.PHONY: opencl-test
-opencl-test:
-	@echo Building and running OpenCL multiply test...
-	$(CC) $(CFLAGS) $(INS) -o $(TESTDIR)/opencl_test.exe $(TESTDIR)/test_opencl.c $(LIB) $(LIB_SRCS) $(OPENCL_LIBS)
-	@"$(TESTDIR)\\opencl_test.exe"
+$(MAIN_BIN): $(MAIN_SRCS) | $(BIN_DIR)
+	$(CC) $(CFLAGS) $(MAIN_SRCS) -o $@ $(LDFLAGS)
+
+tests: $(TEST_BINS)
+
+# Ensure bin directory exists
+$(BIN_DIR):
+	@if not exist "$(BIN_DIR)" mkdir "$(BIN_DIR)"
+
+# Pattern rule: compile test/NAME.c -> bin/_NAME.exe
+# Skip files without main() by ignoring compilation errors with -
+$(BIN_DIR)/_%.exe: test/%.c | $(BIN_DIR)
+	-$(CC) $(CFLAGS) $< source/n2array.c source/numc.c -o $@ $(LDFLAGS) 2>nul
 
 clean:
-	-@if exist "$(TARGET).exe" del "$(TARGET).exe" 2>nul
-	-@if exist "$(TESTDIR)\test.exe" del "$(TESTDIR)\test.exe" 2>nul
+	@if exist "bin\main.exe" del /Q "bin\main.exe"
+	@for /d %%d in (bin) do @if exist "%%d\_*.exe" del /Q "%%d\_*.exe"
 
-.PHONY: all clean test build-all-test
+# Print what will be built
+print:
+	@echo Main: $(MAIN_BIN)
+	@echo Tests: $(TEST_BINS)
+

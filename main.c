@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // #include <stdio.h>
 // #include <stdlib.h>
 // #include "../include/n2array.h"
@@ -22,6 +23,38 @@
 //     //copy
 //     N2Array* N2Array_copy_z = N2Array_copy(N2Array_z);
 //     printf("N2Array copy of z:\n%s\n", N2Array_to_string(N2Array_copy_z));
+=======
+#include <stdio.h>
+#include <stdlib.h>
+#include "n2array.h"
+#include "numc.h"
+
+
+int main() {
+    printf("N2Array Test\n");
+    // from 1d
+    double arr_data[6] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0};
+    int shape[2] = {2, 3};
+    N2Array* N2Array_z = N2Array_from_1d(arr_data, shape);
+    // from 2d
+    double* arr_2d[2];
+    arr_2d[0] = (double[]){1.0, 2.0, 3.0};
+    arr_2d[1] = (double[]){4.0, 5.0, 6.0};
+    N2Array* N2Array_y = N2Array_from_2d(arr_2d, shape);
+
+    char* s = N2Array_to_string(N2Array_z);
+    printf("N2Array from 1D:\n%s\n", s);
+    free(s);
+    s = N2Array_to_string(N2Array_y);
+    printf("N2Array from 2D:\n%s\n", s);
+    free(s);
+
+    //copy
+    N2Array* N2Array_copy_z = N2Array_copy(N2Array_z);
+    s = N2Array_to_string(N2Array_copy_z);
+    printf("N2Array copy of z:\n%s\n", s);
+    free(s);
+>>>>>>> ca037f7615b50510500e3277b6807d2456b043fa
 
 //     //free
 //     N2Array_free(N2Array_y);
@@ -31,9 +64,17 @@
 //     double val = N2Array_get(N2Array_z, 1, 2);
 //     printf("N2Array_z[1,2] = %f\n", val);
     
+<<<<<<< HEAD
 //     //set
 //     N2Array_set(N2Array_z, 0, 0, 10.0);
 //     printf("After setting N2Array_z[0,0] = 10.0:\n%s\n", N2Array_to_string(N2Array_z));
+=======
+    //set
+    N2Array_set(N2Array_z, 0, 0, 10.0);
+    s = N2Array_to_string(N2Array_z);
+    printf("After setting N2Array_z[0,0] = 10.0:\n%s\n", s);
+    free(s);
+>>>>>>> ca037f7615b50510500e3277b6807d2456b043fa
 
 //     //to array
 //     double** array_2d = N2Array_to_array(N2Array_z);
