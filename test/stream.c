@@ -72,7 +72,7 @@ void free_matrix(double** data, int rows) {
 //     double** data = NULL;
 //     int rows = 0, cols = 0;
 
-//     stream_matrix_reader(filename, &data, &rows, &cols);
+    // stream_matrix_reader(filename, &data, &rows, &cols);
 //     print_matrix(data, rows, cols);
 //     free_matrix(data, rows);
 
