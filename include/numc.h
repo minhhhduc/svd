@@ -7,7 +7,7 @@
 #include "../include/n2array.h"
 
 /* Create a contiguous 1-D array of doubles: [start, start+step, ..., <stop]
- * Returns a newly allocated double* or NULL on invalid range. Caller frees.
+ * Returns a newly allocated double* or NULL on invalid range. Caller frees
  */
 double* arange(double start, double stop, double step);
 /* Create `num` evenly spaced values from start to stop inclusive. Caller frees. */
