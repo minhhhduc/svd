@@ -1,10 +1,10 @@
 /**
- * @file norm_reducing_jacobi_v2.c
- * @brief Parallel Symmetric Jacobi Algorithm for Eigenvalue Computation
+ * @file norm_reducing_jacobi_v2_serial.c
+ * @brief Serial Symmetric Jacobi Algorithm for Eigenvalue Computation
  * @details Implementation based on standard Symmetric Jacobi method for Real Symmetric Matrices.
  *          Formulas provided by user.
  * 
- * @author Refactored with clean architecture and OpenMP parallelization
+ * @author Refactored with clean architecture (Serial Version)
  * @date 2025
  */
 
@@ -23,7 +23,7 @@
 #define TOLERANCE           1e-12
 #define REL_TOLERANCE       1e-10
 #define MAX_SWEEPS          100
-#define PARALLEL_THRESHOLD  32      // Minimum n for parallelization
+#define PARALLEL_THRESHOLD  0      // Minimum n for parallelization
 #define NUM_TEST_FILES      21
 #define MAX_PATH_LEN        256
 
@@ -164,8 +164,8 @@ static void perform_jacobi_sweep(
             }
         }
 
-        // --- 2. Compute Rotations (Parallel) ---
-        #pragma omp parallel for if(n > PARALLEL_THRESHOLD)
+        // --- 2. Compute Rotations (Serial) ---
+        // #pragma omp parallel for if(n > PARALLEL_THRESHOLD)
         for (int k = 0; k < n_pairs; ++k) {
             int p = p_indices[k];
             int q = q_indices[k];
@@ -175,9 +175,9 @@ static void perform_jacobi_sweep(
             compute_rotation_parameters(app, aqq, apq, &rot_params[k]);
         }
 
-        // --- 3. Apply Row Rotations (Parallel) ---
+        // --- 3. Apply Row Rotations (Serial) ---
         // Update rows p and q for all columns j
-        #pragma omp parallel for if(n > PARALLEL_THRESHOLD)
+        // #pragma omp parallel for if(n > PARALLEL_THRESHOLD)
         for (int k = 0; k < n_pairs; ++k) {
             int p = p_indices[k];
             int q = q_indices[k];
@@ -196,9 +196,9 @@ static void perform_jacobi_sweep(
             }
         }
 
-        // --- 4. Apply Column Rotations (Parallel) ---
+        // --- 4. Apply Column Rotations (Serial) ---
         // Update cols p and q for all rows i
-        #pragma omp parallel for if(n > PARALLEL_THRESHOLD)
+        // #pragma omp parallel for if(n > PARALLEL_THRESHOLD)
         for (int k = 0; k < n_pairs; ++k) {
             int p = p_indices[k];
             int q = q_indices[k];
@@ -219,8 +219,8 @@ static void perform_jacobi_sweep(
             }
         }
 
-        // --- 5. Update Eigenvectors V (Parallel) ---
-        #pragma omp parallel for if(n > PARALLEL_THRESHOLD)
+        // --- 5. Update Eigenvectors V (Serial) ---
+        // #pragma omp parallel for if(n > PARALLEL_THRESHOLD)
         for (int k = 0; k < n_pairs; ++k) {
             int p = p_indices[k];
             int q = q_indices[k];
@@ -268,7 +268,7 @@ static void perform_jacobi_sweep(
 
 static double compute_off_diagonal_norm(const double* A, int n) {
     double sum_sq = 0.0;
-    #pragma omp parallel for reduction(+:sum_sq) if(n > PARALLEL_THRESHOLD)
+    // #pragma omp parallel for reduction(+:sum_sq) if(n > PARALLEL_THRESHOLD)
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             if (i != j) {
@@ -301,13 +301,13 @@ void compute_eigenvalues(
     }
 
     // Initialize A = A_in
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int i = 0; i < n * n; ++i) {
         A[i] = A_in[i];
     }
 
     // Initialize V = Identity
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             MAT_AT(V, i, j, n) = (i == j) ? 1.0 : 0.0;
@@ -416,7 +416,7 @@ static void matmul_double(const double* A, const double* B, double* C, int n, in
 }
 
 static void transpose_mat_double(const double* A, double* T, int rows, int cols) {
-    #pragma omp parallel for collapse(2)
+    // #pragma omp parallel for collapse(2)
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
             T[j * rows + i] = A[i * cols + j];
@@ -486,7 +486,7 @@ void calculate_time_inparallel(
 
 int main(void) {
     const char* path_input = "./data/input";
-    const char output_filename[] = "./data/output/norm_reducing_jacobi_output.txt";
+    const char output_filename[] = "./data/output/norm_reducing_jacobi_serial_output.txt";
     
     // Allocate array of strings for filenames
     char** input_filename = (char**)malloc(NUM_TEST_FILES * sizeof(char*));

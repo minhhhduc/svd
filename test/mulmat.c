@@ -313,11 +313,11 @@ void matmul_dns(double** A, double** B, double** C, int n, int m, int p_dim, int
     // A_local: block_size_n × block_size_m per thread
     // B_local: block_size_m × block_size_n per thread
     // temp_results: block_size_n × block_size_n per thread (result blocks)
-    double* A_local = (double*)malloc(NUM_THREADS * block_size_n * block_size_m * sizeof(double));
-    double* B_local = (double*)malloc(NUM_THREADS * block_size_m * block_size_n * sizeof(double));
-    double* temp_results = (double*)calloc(NUM_THREADS * block_size_n * block_size_n, sizeof(double));
+    double* A_local = (double*)malloc(num_threads * block_size_n * block_size_m * sizeof(double));
+    double* B_local = (double*)malloc(num_threads * block_size_m * block_size_n * sizeof(double));
+    double* temp_results = (double*)calloc(num_threads * block_size_n * block_size_n, sizeof(double));
 
-    #pragma omp parallel num_threads(NUM_THREADS)
+    #pragma omp parallel num_threads(num_threads)
     {
         int tid = omp_get_thread_num();
         // Map thread ID to 3D cube position (i,j,k)
