@@ -1,0 +1,14 @@
+=== NORM REDUCING JACOBI EIGENVALUE TEST LOG ===
+Total matrices to process: 21
+
+-------------------------------------------
+TEST 0
+-------------------------------------------
+Input file: ./data/input/matrix_0.txt
+Matrix dimensions: 3000 rows x 1024 cols
+Transposed matrix B: 1024 rows x 3000 cols (A^T)
+Allocated Gram matrix C: 1024 x 1024
+Gram matrix computed using DNS: C = A^T * A (size 1024x1024)
+DNS multiplication time: 2.204000 seconds
+Converted to flat array
+Starting eigenvalue computation...
