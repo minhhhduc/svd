@@ -363,6 +363,7 @@ pair* eigh(const N2Array* a) {
         double max_val = 0.0;
         int p = 0, q = 1;
         
+        #pragma omp parallel for collapse(2) schedule(static) reduction(max:max_val)
         for (int i = 0; i < n; ++i) {
             for (int j = i + 1; j < n; ++j) {
                 double val = fabs(N2Array_get(A, i, j));
@@ -396,6 +397,7 @@ pair* eigh(const N2Array* a) {
         N2Array_set(A, q, p, 0.0);
         
         // Update off-diagonal elements
+        #pragma omp parallel for schedule(static)
         for (int k = 0; k < n; ++k) {
             if (k != p && k != q) {
                 double akp = N2Array_get(A, k, p);
@@ -410,6 +412,7 @@ pair* eigh(const N2Array* a) {
         }
         
         // Update eigenvectors
+        #pragma omp parallel for schedule(static)
         for (int i = 0; i < n; ++i) {
             double vip = N2Array_get(eigenvectors, i, p);
             double viq = N2Array_get(eigenvectors, i, q);
