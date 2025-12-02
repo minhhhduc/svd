@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <omp.h>
 #include "mulmat.c"
 
 // Định nghĩa các hằng số
