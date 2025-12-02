@@ -402,11 +402,8 @@ int pnrj_eig(double** A, double* eigenvalues, double** eigenvectors, int n) {
         lower_norm = lower_triangular_norm(A, n);
         dep_norm = departure_from_normality(A, n);
         
-        if(sweep % 5 == 0 || sweep < 3) {
-            printf("Sweep %d: lower_norm=%.2e, dep_norm=%.2e (reduction: %.2f%%)\n",
-                   sweep, lower_norm, dep_norm, 
-                   100.0 * (1.0 - lower_norm/initial_lower));
-        }
+        // In ra mọi sweep
+        printf("Sweep %d: lower_norm = %.6e\n", sweep, lower_norm);
     }
     
     printf("\nConverged after %d sweeps\n", sweep);
