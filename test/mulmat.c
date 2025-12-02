@@ -7,7 +7,7 @@
 #include <math.h>
 #include "stream.c"
 #define N 4      // Kích thước ma trận
-#define NUM_THREADS 8  // Số thread OpenMP (8 = 2³ cho DNS 3D cube)
+#define NUM_THREADS 12  // Số thread OpenMP (8 = 2³ cho DNS 3D cube)
 #define processor_grid_dim 2 // Kích thước lưới giả lập cho Cannon (2x2=4 threads)
 
 
@@ -313,11 +313,11 @@ void matmul_dns(double** A, double** B, double** C, int n, int m, int p_dim, int
     // A_local: block_size_n × block_size_m per thread
     // B_local: block_size_m × block_size_n per thread
     // temp_results: block_size_n × block_size_n per thread (result blocks)
-    double* A_local = (double*)malloc(NUM_THREADS * block_size_n * block_size_m * sizeof(double));
-    double* B_local = (double*)malloc(NUM_THREADS * block_size_m * block_size_n * sizeof(double));
-    double* temp_results = (double*)calloc(NUM_THREADS * block_size_n * block_size_n, sizeof(double));
+    double* A_local = (double*)malloc(num_threads * block_size_n * block_size_m * sizeof(double));
+    double* B_local = (double*)malloc(num_threads * block_size_m * block_size_n * sizeof(double));
+    double* temp_results = (double*)calloc(num_threads * block_size_n * block_size_n, sizeof(double));
 
-    #pragma omp parallel num_threads(NUM_THREADS)
+    #pragma omp parallel num_threads(num_threads)
     {
         int tid = omp_get_thread_num();
         // Map thread ID to 3D cube position (i,j,k)
@@ -508,20 +508,22 @@ void calculate(char** fileins, const char* fileout) {
     fclose(fout);
 }
 
-// int main(){
-//     const char* path_input = "./data/input/matrix";
-//     const char* output_filename = "./data/output/mul_mat_times.csv";
-//     char* input_filenames[21];
-//     for (int i = 0; i < 21; i++) {
+#ifdef TEST_MULMAT
+int main(){
+    const char* path_input = "./data/input/matrix";
+    const char* output_filename = "./data/output/mm_output.csv";
+    char* input_filenames[21];
+    for (int i = 0; i < 21; i++) {
 
-//         input_filenames[i] = (char*)malloc(150 * sizeof(char));
-//         sprintf(input_filenames[i], "%s_%d.txt", path_input, i);
-//         printf("Processing file: %s\n", input_filenames[i]);
-//     }
-//     calculate(input_filenames, output_filename);
+        input_filenames[i] = (char*)malloc(150 * sizeof(char));
+        sprintf(input_filenames[i], "%s_%d.txt", path_input, i);
+        printf("Processing file: %s\n", input_filenames[i]);
+    }
+    calculate(input_filenames, output_filename);
 
-//     // Giải phóng
-//     for(int i=0;i<21;i++) free(input_filenames[i]);
+    // Giải phóng
+    for(int i=0;i<21;i++) free(input_filenames[i]);
     
-//     return 0;
-// }
+    return 0;
+}
+#endif
