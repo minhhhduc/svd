@@ -1,0 +1,7 @@
+matrix_id,rows,cols,time_seconds
+data/input/matrix_1.txt,3333,768,119.033000
+data/input/matrix_2.txt,490,64,0.091000
+data/input/matrix_3.txt,200,128,0.251000
+data/input/matrix_4.txt,500,256,1.692000
+data/input/matrix_5.txt,750,512,26.880000
+data/input/matrix_6.txt,1000,178,0.596000

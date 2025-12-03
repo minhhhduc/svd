@@ -367,19 +367,19 @@ void calculate_time_inparallel(const char** input_filename, const char *output_f
 // ----------------------------------------------------------------------
 // Ví dụ sử dụng (Main)
 // ----------------------------------------------------------------------
-int main() {
-    const char *path_input = "./data/input";
-    char *input_filename[21];
-    const char output_filename[] = "./data/output/norm_reducing_jacobi_output.txt";
-    for (int i = 0; i < 21; i++) {
-        input_filename[i] = (char*)malloc(150 * sizeof(char));
-    }
-    for (int i = 0; i < 21; i++) {
-        sprintf(input_filename[i], "%s/matrix_%d.txt", path_input, i);
-    }
-    calculate_time_inparallel((const char**)input_filename, output_filename, 21);
-    for (int i = 0; i < 21; i++) {
-        free(input_filename[i]);
-    }   
-    return 0;
-}
+// int main() {
+//     const char *path_input = "./data/input";
+//     char *input_filename[21];
+//     const char output_filename[] = "./data/output/norm_reducing_jacobi_output.txt";
+//     for (int i = 0; i < 21; i++) {
+//         input_filename[i] = (char*)malloc(150 * sizeof(char));
+//     }
+//     for (int i = 0; i < 21; i++) {
+//         sprintf(input_filename[i], "%s/matrix_%d.txt", path_input, i);
+//     }
+//     calculate_time_inparallel((const char**)input_filename, output_filename, 21);
+//     for (int i = 0; i < 21; i++) {
+//         free(input_filename[i]);
+//     }   
+//     return 0;
+// }

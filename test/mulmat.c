@@ -5,7 +5,7 @@
 #include <direct.h>
 #include <string.h>
 #include <math.h>
-#include "stream.c"
+#include "../include/stream.h"
 #define N 4      // Kích thước ma trận
 #define NUM_THREADS 8  // Số thread OpenMP (8 = 2³ cho DNS 3D cube)
 #define processor_grid_dim 2 // Kích thước lưới giả lập cho Cannon (2x2=4 threads)
@@ -256,7 +256,7 @@ void matmul_dns(double** A, double** B, double** C, int n, int m, int p_dim, int
     if(p*p*p != num_threads) p = 1;  // fallback nếu không phải lập phương hoàn hảo
     
     // Kiểm tra điều kiện cơ bản
-    if(n != p_dim || p < 2) {
+    if(p < 2) {
         // Fallback: dùng phương pháp tối ưu với static schedule
         #pragma omp parallel for collapse(2) num_threads(num_threads) schedule(static)
         for(int i=0; i<n; i++) {
@@ -271,10 +271,13 @@ void matmul_dns(double** A, double** B, double** C, int n, int m, int p_dim, int
         return;
     }
     
-    // Padding: làm tròn lên để chia hết cho p
-    int n_padded = p * ((n + p - 1) / p);  // ceil(n/p) * p
+    // Padding: làm tròn lên để chia hết cho p, và n_padded phải bằng p_dim_padded cho DNS
+    int max_dim = (n > p_dim) ? n : p_dim;
+    int common_padded_dim = p * ((max_dim + p - 1) / p);
+    
+    int n_padded = common_padded_dim;
+    int p_dim_padded = common_padded_dim;
     int m_padded = p * ((m + p - 1) / p);  // ceil(m/p) * p
-    int p_dim_padded = p * ((p_dim + p - 1) / p);  // ceil(p_dim/p) * p
     
     // Nếu cần padding, tạo ma trận mới với zero-padding
     double** A_work = A;

@@ -14,7 +14,7 @@
 #include <omp.h>
 #include <stdbool.h>
 #include <string.h>
-#include "mulmat.c"
+#include "../include/mulmat.h"
 
 /* ============================================================================
  * CONFIGURATION CONSTANTS
@@ -57,7 +57,7 @@ static void stream_matrix_reader_double(const char* filename, double** data, int
 static void matmul_double(const double* A, const double* B, double* C, int n, int m, int p);
 static void transpose_mat_double(const double* A, double* T, int rows, int cols);
 
-void compute_eigenvalues(int n, const double* A_in, double* w, double* V_out);
+void compute_eigenvalues_parallel(int n, const double* A_in, double* w, double* V_out);
 
 /* ============================================================================
  * CORE ALGORITHM FUNCTIONS
@@ -284,7 +284,7 @@ static double compute_off_diagonal_norm(const double* A, int n) {
  * MAIN SOLVER
  * ============================================================================ */
 
-void compute_eigenvalues(
+void compute_eigenvalues_parallel(
     int n,
     const double* A_in,
     double* w,
@@ -428,6 +428,7 @@ static void transpose_mat_double(const double* A, double* T, int rows, int cols)
  * BENCHMARKING
  * ============================================================================ */
 
+#ifdef STANDALONE
 void calculate_time_inparallel(
     const char** input_filename,
     const char* output_filename,
@@ -462,7 +463,7 @@ void calculate_time_inparallel(
         
         printf("Computing eigenvalues for %dx%d matrix...\n", n, n);
         double start_time = omp_get_wtime();
-        compute_eigenvalues(n, C_flat, w, V);
+        compute_eigenvalues_parallel(n, C_flat, w, V);
         double end_time = omp_get_wtime();
         
         double computation_time = end_time - start_time;
@@ -517,3 +518,4 @@ int main(void) {
     
     return EXIT_SUCCESS;
 }
+#endif

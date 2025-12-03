@@ -14,7 +14,8 @@
 #include <omp.h>
 #include <stdbool.h>
 #include <string.h>
-#include "mulmat.c"
+#include "../include/mulmat.h"
+#include "../include/stream.h"
 
 /* ============================================================================
  * CONFIGURATION CONSTANTS
@@ -484,36 +485,36 @@ void calculate_time_inparallel(
     fclose(fout);
 }
 
-int main(void) {
-    const char* path_input = "./data/input";
-    const char output_filename[] = "./data/output/norm_reducing_jacobi_serial_output.txt";
+// int main(void) {
+//     const char* path_input = "./data/input";
+//     const char output_filename[] = "./data/output/norm_reducing_jacobi_serial_output.txt";
     
-    // Allocate array of strings for filenames
-    char** input_filename = (char**)malloc(NUM_TEST_FILES * sizeof(char*));
-    if (!input_filename) {
-        fprintf(stderr, "Memory allocation failed for filenames.\n");
-        return EXIT_FAILURE;
-    }
+//     // Allocate array of strings for filenames
+//     char** input_filename = (char**)malloc(NUM_TEST_FILES * sizeof(char*));
+//     if (!input_filename) {
+//         fprintf(stderr, "Memory allocation failed for filenames.\n");
+//         return EXIT_FAILURE;
+//     }
 
-    for (int i = 0; i < NUM_TEST_FILES; i++) {
-        input_filename[i] = (char*)malloc(MAX_PATH_LEN * sizeof(char));
-        if (!input_filename[i]) {
-            fprintf(stderr, "Memory allocation failed for filename %d.\n", i);
-            // Cleanup previously allocated
-            for (int j = 0; j < i; j++) free(input_filename[j]);
-            free(input_filename);
-            return EXIT_FAILURE;
-        }
-        snprintf(input_filename[i], MAX_PATH_LEN, "%s/matrix_%d.txt", path_input, i);
-    }
+//     for (int i = 0; i < NUM_TEST_FILES; i++) {
+//         input_filename[i] = (char*)malloc(MAX_PATH_LEN * sizeof(char));
+//         if (!input_filename[i]) {
+//             fprintf(stderr, "Memory allocation failed for filename %d.\n", i);
+//             // Cleanup previously allocated
+//             for (int j = 0; j < i; j++) free(input_filename[j]);
+//             free(input_filename);
+//             return EXIT_FAILURE;
+//         }
+//         snprintf(input_filename[i], MAX_PATH_LEN, "%s/matrix_%d.txt", path_input, i);
+//     }
     
-    calculate_time_inparallel((const char**)input_filename, output_filename, NUM_TEST_FILES);
+//     calculate_time_inparallel((const char**)input_filename, output_filename, NUM_TEST_FILES);
     
-    // Cleanup
-    for (int i = 0; i < NUM_TEST_FILES; i++) {
-        free(input_filename[i]);
-    }
-    free(input_filename);
+//     // Cleanup
+//     for (int i = 0; i < NUM_TEST_FILES; i++) {
+//         free(input_filename[i]);
+//     }
+//     free(input_filename);
     
-    return EXIT_SUCCESS;
-}
+//     return EXIT_SUCCESS;
+// }

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../include/stream.h"
 
 void stream_matrix_reader(const char* filename, double*** data, int* rows, int* cols) {
     FILE* file = fopen(filename, "r");

@@ -363,7 +363,7 @@ pair* eigh(const N2Array* a) {
         double max_val = 0.0;
         int p = 0, q = 1;
         
-        #pragma omp parallel for collapse(2) schedule(static) reduction(max:max_val)
+        #pragma omp parallel for schedule(dynamic) reduction(max:max_val)
         for (int i = 0; i < n; ++i) {
             for (int j = i + 1; j < n; ++j) {
                 double val = fabs(N2Array_get(A, i, j));
