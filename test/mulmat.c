@@ -7,7 +7,7 @@
 #include <math.h>
 #include "../include/stream.h"
 #define N 4      // Kích thước ma trận
-#define NUM_THREADS 8  // Số thread OpenMP (8 = 2³ cho DNS 3D cube)
+#define NUM_THREADS 12  // Số thread OpenMP (8 = 2³ cho DNS 3D cube)
 #define processor_grid_dim 2 // Kích thước lưới giả lập cho Cannon (2x2=4 threads)
 
 
@@ -511,20 +511,22 @@ void calculate(char** fileins, const char* fileout) {
     fclose(fout);
 }
 
-// int main(){
-//     const char* path_input = "./data/input/matrix";
-//     const char* output_filename = "./data/output/mul_mat_times.csv";
-//     char* input_filenames[21];
-//     for (int i = 0; i < 21; i++) {
+#ifdef TEST_MULMAT
+int main(){
+    const char* path_input = "./data/input/matrix";
+    const char* output_filename = "./data/output/mm_output.csv";
+    char* input_filenames[21];
+    for (int i = 0; i < 21; i++) {
 
-//         input_filenames[i] = (char*)malloc(150 * sizeof(char));
-//         sprintf(input_filenames[i], "%s_%d.txt", path_input, i);
-//         printf("Processing file: %s\n", input_filenames[i]);
-//     }
-//     calculate(input_filenames, output_filename);
+        input_filenames[i] = (char*)malloc(150 * sizeof(char));
+        sprintf(input_filenames[i], "%s_%d.txt", path_input, i);
+        printf("Processing file: %s\n", input_filenames[i]);
+    }
+    calculate(input_filenames, output_filename);
 
-//     // Giải phóng
-//     for(int i=0;i<21;i++) free(input_filenames[i]);
+    // Giải phóng
+    for(int i=0;i<21;i++) free(input_filenames[i]);
     
-//     return 0;
-// }
+    return 0;
+}
+#endif
