@@ -40,7 +40,8 @@ int main() {
         int cols = rows;
         if (rows < 1) { rows = 1; cols = 1; }
 
-        // Alloc Data
+        for (int op = 0; op < 10; op++) {
+            // Alloc Data
         double* A = (double*)malloc(n * sizeof(double));
         for(int i=0; i<n; ++i) A[i] = (double)rand() / RAND_MAX;
         
@@ -117,6 +118,7 @@ int main() {
         free(A);
         for(int i=0; i<rows; ++i) free(Mat[i]);
         free(Mat);
+        }
     }
     
     fclose(fp_sq); fclose(fp_arg); fclose(fp_tr);
