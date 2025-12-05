@@ -9,6 +9,7 @@
 #define N 4      // Kích thước ma trận
 #define NUM_THREADS 12  // Số thread OpenMP (8 = 2³ cho DNS 3D cube)
 #define processor_grid_dim 2 // Kích thước lưới giả lập cho Cannon (2x2=4 threads)
+#define OUTPUT_NAME "./data/output/mulmat_output_12.txt"
 
 
 double** transpose_mat(double** A, int rows, int cols) {
@@ -514,7 +515,7 @@ void calculate(char** fileins, const char* fileout) {
 #ifdef TEST_MULMAT
 int main(){
     const char* path_input = "./data/input/matrix";
-    const char* output_filename = "./data/output/mm_output.csv";
+    const char* output_filename = OUTPUT_NAME;
     char* input_filenames[21];
     for (int i = 0; i < 21; i++) {
 
