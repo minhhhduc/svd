@@ -1,0 +1,129 @@
+\documentclass[a4paper, oneside]{report}
+
+% ---------- Ngôn ngữ & mã hóa ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc} % hỗ trợ tiếng Việt
+\usepackage[vietnamese]{babel}
+% ---------- Định dạng trang ----------
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left=30mm,
+    right=20mm,
+    top=25mm,
+    bottom=25mm
+}
+
+% ---------- Cỡ chữ & giãn dòng ----------
+\usepackage{setspace}
+\onehalfspacing               % Giãn dòng 1.5
+
+% ép toàn văn bản về 14pt
+\makeatletter
+\renewcommand\normalsize{%
+   \@setfontsize\normalsize{14pt}{18pt}%
+   \abovedisplayskip 12pt plus 3pt minus 9pt%
+   \abovedisplayshortskip \z@ plus 3pt%
+   \belowdisplayshortskip 7pt plus 3pt minus 4pt%
+   \belowdisplayskip \abovedisplayskip%
+}
+\normalsize
+\makeatother
+
+% ---------- Toán học ----------
+\usepackage{amsmath, amssymb, amsthm}
+
+% ---------- Hình ảnh & bảng ----------
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{float}   % giữ nguyên vị trí figure/table với [H]
+
+% --- Căn chỉnh hình ảnh và caption ---
+% \captionsetup{
+%   font={normalsize},       % cỡ chữ 14pt cho caption
+%   labelfont=bf,             % "Hình 1.1" in đậm
+%   labelsep=space,           % khoảng cách giữa "Hình 1.1" và nội dung
+%   justification=centering,  % căn giữa caption
+%   skip=10pt                 % khoảng cách giữa hình và caption
+% }
+
+% --- Giữ nguyên cấu trúc figure ---
+% Các giá trị này giúp LaTeX không đẩy hình xuống trang khác quá sớm
+\setcounter{topnumber}{5}
+\setcounter{bottomnumber}{5}
+\setcounter{totalnumber}{10}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\renewcommand{\textfraction}{0.1}
+
+% ---------- Hyperlinks ----------
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Header & Footer ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}       % tiêu đề chương bên trái
+\fancyfoot[C]{\thepage}        % số trang ở giữa
+
+% ---------- Heading (Chương, Mục, Tiểu mục) ----------
+\usepackage{titlesec}
+
+% --- CHƯƠNG ---
+\titleformat{\chapter}[block]
+  {\bfseries\centering\fontsize{18pt}{22pt}\selectfont}
+  {Chương \thechapter.}{1em}{}
+
+\titlespacing*{\chapter}{0pt}{0pt}{1em}
+
+% --- MỤC (Section) ---
+\titleformat{\section}[block]
+  {\bfseries\fontsize{16pt}{20pt}\selectfont}
+  {\thesection}{1em}{}
+
+\titlespacing*{\section}{0pt}{1em}{0.5em}
+
+% --- TIỂU MỤC (Subsection) ---
+\titleformat{\subsection}[block]
+  {\bfseries\fontsize{15pt}{18pt}\selectfont}
+  {\thesubsection}{1em}{}
+
+\titlespacing*{\subsection}{0pt}{0.8em}{0.4em}
+
+% ---------- Mục lục ----------
+\usepackage{tocloft}
+\renewcommand{\contentsname}{\centering\Large\bfseries MỤC LỤC}
+\renewcommand{\cftchapfont}{\bfseries\normalsize}
+\renewcommand{\cftsecfont}{\normalsize}
+\renewcommand{\cftsubsecfont}{\normalsize}
+\renewcommand{\cftchappagefont}{\bfseries}
+\setlength{\cftbeforechapskip}{1em}
+\setlength{\cftbeforesecskip}{0.4em}
+
+% ---------- Tài liệu tham khảo ----------
+\usepackage[backend=biber, style=numeric, sorting=none]{biblatex}
+\addbibresource{thesis.bib}
+
+% ---------- Trang bìa ----------
+\usepackage{fancybox}
+
+% ---------- Lệnh tùy chỉnh ----------
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, arrows.meta, positioning}
+
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+% Việt hóa tiêu đề thuật toán
+\floatname{algorithm}{Thuật toán}
+
+% Việt hóa các từ khóa bên trong
+\algrenewcommand\algorithmicrequire{\textbf{Đầu vào:}}
+\algrenewcommand\algorithmicensure{\textbf{Đầu ra:}}
+\algrenewcommand\algorithmicwhile{\textbf{trong khi}}

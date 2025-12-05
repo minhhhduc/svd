@@ -1,0 +1,66 @@
+\chapter{Mở đầu}
+\section{Giới thiệu bài toán}
+\text{}\indent Sự phát triển mạnh mẽ của công nghệ thu thập và lưu trữ dữ liệu đã dẫn đến việc tạo ra các tập dữ liệu có số lượng đặc trưng (features) ngày càng lớn. Trong nhiều lĩnh vực như thị giác máy tính, xử lý ngôn ngữ tự nhiên, sinh học phân tử, tài chính hay học máy, mỗi mẫu dữ liệu có thể chứa hàng nghìn, thậm chí hàng triệu thuộc tính. Tuy nhiên, việc làm việc với dữ liệu nhiều chiều đặt ra hàng loạt thách thức. Ví dụ, trong học máy, sự xuất hiện của các đặc trưng không quan trọng hoặc dư thừa có thể làm giảm tốc độ huấn luyện, gây nhiễu và ảnh hưởng tiêu cực đến khả năng dự đoán của mô hình % \cite{hastie2009elements}.
+
+Qua đó, ta thấy rằng việc tồn tại quá nhiều đặc trưng không liên quan hoặc trùng lặp không chỉ làm tăng chi phí tính toán mà còn dẫn tới hiện tượng \textit{lời nguyền chiều không gian} (curse of dimensionality) \cite{bellman1957dynamic, verleysen2005curse}. Khi số chiều tăng, dữ liệu trở nên thưa thớt, khoảng cách giữa các điểm mất ý nghĩa, khiến các mô hình học máy khó phát hiện được cấu trúc tiềm ẩn. Điều này làm suy giảm đáng kể hiệu suất của các thuật toán phân loại, hồi quy hay phân cụm.
+
+Do đó, bài toán \textit{giảm chiều dữ liệu} (Dimensionality Reduction) ra đời như một hướng tiếp cận nhằm chuyển dữ liệu từ không gian chiều cao về không gian chiều thấp hơn nhưng vẫn giữ lại những thông tin bản chất nhất. Thay vì sử dụng trực tiếp các đặc trưng gốc, các kỹ thuật giảm chiều xây dựng một biểu diễn cô đọng hơn của dữ liệu, giúp các mô hình học máy trở nên hiệu quả, ổn định và dễ diễn giải \cite{jolliffe2002principal, maaten2008visualizing}.
+
+\newpage
+\section{Các thuật toán giảm chiều dữ liệu}
+\textbf{}\indent Trong lĩnh vực học máy và khai phá dữ liệu, nhiều thuật toán đã được phát triển nhằm mục tiêu giảm chiều dữ liệu nhưng vẫn giữ lại những thông tin quan trọng nhất. Các kỹ thuật này có thể được chia thành hai nhóm chính: \textit{phương pháp tuyến tính} và \textit{phi tuyến tính} \cite{jolliffe2002principal, van2009dimensionality}.
+
+Phương pháp tuyến tính phổ biến nhất là \textbf{PCA} (Principal Component Analysis), vốn hoạt động bằng cách tìm các hướng phương sai lớn nhất trong dữ liệu. Bên cạnh đó, \textbf{SVD} (Singular Value Decomposition) đóng vai trò nền tảng toán học của PCA và nhiều thuật toán ma trận khác, cho phép phân rã dữ liệu thành các thành phần trực giao và đặc trưng chính \cite{golub2013matrix}. Trong bài này sẽ tập trung chính vào \textbf{phương pháp SVD} nhờ tính chất mạnh mẽ, khả năng diễn giải rõ ràng và ứng dụng rộng rãi trong xử lý dữ liệu nhiều chiều.
+
+Ngoài các phương pháp tuyến tính, các kỹ thuật phi tuyến như \textbf{t-SNE} (t-distributed Stochastic Neighbor Embedding) \cite{maaten2008visualizing}, \textbf{UMAP} (Uniform Manifold Approximation and Projection) \cite{mcinnes2018umap} hay \textbf{Isomap} cũng được sử dụng rộng rãi để khám phá cấu trúc hình học phức tạp của dữ liệu trong không gian chiều cao. Tuy nhiên, các phương pháp này chủ yếu phục vụ trực quan hóa và không cung cấp biểu diễn toàn cục như SVD.
+
+Do đó, việc nghiên cứu và tối ưu hoá SVD trong bài toán giảm chiều không chỉ mang ý nghĩa lý thuyết mà còn có giá trị thực tiễn trong nhiều ứng dụng như nén dữ liệu, phát hiện mẫu, và xây dựng hệ thống khuyến nghị.
+
+% \newpage
+% \section{Các bài toán con trong giảm chiều dữ liệu}
+% \text{}\indent Giảm chiều dữ liệu không chỉ là việc áp dụng trực tiếp một thuật toán như PCA hay SVD, mà thường bao gồm nhiều bài toán con cần giải quyết trước và trong quá trình xử lý. Các bài toán con này đảm bảo dữ liệu được chuẩn bị đúng cách, các phép tính ma trận được thực hiện hiệu quả và các giá trị kì dị được ước lượng chính xác để trích xuất thông tin quan trọng nhất.
+
+% \subsection{Chuẩn hóa dữ liệu}
+% \textbf{}\indent Trước khi giảm chiều, dữ liệu cần được chuẩn hóa nhằm loại bỏ ảnh hưởng của các thang đo khác nhau giữa các thuộc tính. Nếu không chuẩn hóa, các biến có giá trị lớn sẽ chi phối phương sai và gây sai lệch kết quả. Hai phương pháp chuẩn hóa thường gặp là:
+% \begin{itemize}
+%     \item \textbf{Standardization (Z-score)}: đưa dữ liệu về phân phối có trung bình $0$ và độ lệch chuẩn $1$.
+%     \item \textbf{Min-Max scaling}: đưa dữ liệu về miền $[0,1]$.
+% \end{itemize}
+% Chuẩn hóa đặc biệt quan trọng trong PCA và SVD vì các phương pháp này dựa trên phân tích phương sai và độ lớn của dữ liệu.
+
+% \subsection{Nhân ma trận}
+% \textbf{}\indent Nhân ma trận đóng vai trò trung tâm trong các phương pháp giảm chiều tuyến tính. Khi thực hiện PCA hoặc SVD, ta phải tính ma trận hiệp phương sai hoặc thực hiện phân rã ma trận dạng:
+% \[
+% X^T X, \quad XX^T
+% \]
+% Tuy nhiên, với dữ liệu kích thước lớn, phép nhân ma trận có độ phức tạp $O(n^3)$ và trở thành thách thức về thời gian và bộ nhớ. Do đó, các thư viện tối ưu như BLAS, LAPACK hoặc các thuật toán xấp xỉ (randomized matrix multiplication) thường được sử dụng để tăng tốc quá trình giảm chiều.
+
+% \subsection{Giá trị kì dị (Singular Values)}
+% Giá trị kì dị (Singular Values) là các đại lượng thu được từ phép phân rã giá trị kì dị (Singular Value Decomposition - SVD) của một ma trận. Cho một ma trận $A \in \mathbb{R}^{m \times n}$, phép phân rã SVD được biểu diễn như sau:
+% \[
+% A = U \, \Sigma \, V^T
+% \]
+% Trong đó:
+% \begin{itemize}
+%     \item $U$ là ma trận trực giao kích thước $m \times m$ chứa các vectơ riêng trái.
+%     \item $V$ là ma trận trực giao kích thước $n \times n$ chứa các vectơ riêng phải.
+%     \item $\Sigma$ là ma trận đường chéo kích thước $m \times n$, với các phần tử đường chéo $\sigma_1, \sigma_2, \dots, \sigma_r$ là các giá trị kì dị của ma trận $A$.
+% \end{itemize}
+
+% Các giá trị kì dị luôn không âm và được sắp xếp theo thứ tự giảm dần $\sigma_1 \geq \sigma_2 \geq \dots \geq \sigma_r \geq 0$. Chúng biểu thị mức độ quan trọng của từng thành phần trong việc mô tả cấu trúc của ma trận. Trong các bài toán giảm chiều dữ liệu, chỉ các giá trị kì dị lớn nhất thường được giữ lại để xấp xỉ ma trận ban đầu.
+
+% Giá trị kì dị còn liên quan chặt chẽ đến chuẩn ma trận, hạng ma trận và điều kiện ổn định số học. Việc loại bỏ các giá trị kì dị nhỏ giúp giảm nhiễu và cải thiện hiệu suất mô hình.
+
+% Trích dẫn
+ SVD đóng vai trò nền tảng trong nhiều kỹ thuật xử lý tín hiệu và học máy\cite{golub2013matrix}.
+\newpage
+\section{Mục tiêu}
+Mục tiêu của nhóm thực hiện đề tài là tập trung nghiên cứu, thiết kế và tối ưu hóa hiệu suất của thuật toán SVD (Singular Value Decomposition) thông qua việc xây dựng và triển khai chiến lược song song hóa các bài toán con. Đề tài hướng đến việc rút ngắn thời gian thực thi trên các hệ thống phần cứng đa lõi mà vẫn đảm bảo giữ lại các đặc trưng quan trọng của dữ liệu hay nói cách khác là giảm độ mất mát của dữ liệu.
+
+Các mục tiêu cụ thể bao gồm:
+\begin{itemize}
+    \item Xây dựng và triển khai phiên bản song song của thuật toán SVD nhằm tận dụng tối đa tài nguyên tính toán.
+    \item So sánh hiệu suất giữa SVD tuần tự và SVD song song trên các tập dữ liệu lớn.
+    \item Đánh giá tác động của song song hóa đến độ chính xác và chất lượng giảm chiều.
+    \item Ứng dụng SVD song song vào các bài toán trực quan hóa, phân loại hoặc phân cụm dữ liệu lớn.
+\end{itemize}

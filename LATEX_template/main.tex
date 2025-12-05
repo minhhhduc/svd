@@ -1,0 +1,33 @@
+
+\input{preamble}
+
+\begin{document}
+
+\pagenumbering{gobble} % Ẩn số trang
+\input{bia}            % (file bia.tex của bạn)
+\clearpage
+
+% ---------- TRANG MỤC LỤC ----------
+\pagenumbering{gobble} % Tiếp tục ẩn số trang
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+
+% ---------- BẮT ĐẦU NỘI DUNG ----------
+\pagenumbering{arabic} % Đánh số lại từ 1
+\setcounter{page}{1}
+% \maketitle
+
+
+\include{chapters/chapter1}
+\include{chapters/chapter2}
+\include{chapters/chapter3}
+\include{chapters/chapter4}
+\include{chapters/chapter5}
+\include{chapters/chapter6}
+
+\printbibliography
+\end{document}

@@ -1,0 +1,257 @@
+\chapter{Cơ sở lí thuyết}
+
+\section{Phương pháp giải pháp bài toán}
+
+\textbf{}\indent Mục tiêu của SVD là phân rã ma trận dữ liệu thành tích của ba ma trận trực chuẩn, từ đó biểu diễn dữ liệu trong một hệ cơ sở mới, đồng thời có thể giảm số chiều dữ liệu mà vẫn giữ được cấu trúc quan trọng.
+
+Các bước của quá trình giảm chiều dữ liệu với phương pháp SVD như sau: 
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{
+\begin{tikzpicture}[
+    node distance=4cm,
+    arrow/.style={-Latex, thick},
+    every node/.style={align=center}
+]
+
+\node (X) [rectangle, rounded corners, draw, fill=blue!20, text width=3cm] {Input Matrix $X$ \\ (m × n)};
+\node (svd) [rectangle, rounded corners, draw, fill=green!20, text width=3cm, right of=X] {Compute SVD:\\ $X = U \Sigma V^T$};
+\node (Vk) [rectangle, rounded corners, draw, fill=yellow!20, text width=3cm, right of=svd] {Select top-$k$\\ right singular vectors $V_k$};
+\node (reduce) [rectangle, rounded corners, draw, fill=orange!20, text width=3cm, right of=Vk] {Compute Reduced Data:\\ $X_{\text{reduced}} = X V_k$};
+\node (output) [rectangle, rounded corners, draw, fill=red!20, text width=3cm, right of=reduce] {Downstream Tasks:\\ SVD, Compression, Recommendation};
+
+\draw [arrow] (X) -- (svd);
+\draw [arrow] (svd) -- (Vk);
+\draw [arrow] (Vk) -- (reduce);
+\draw [arrow] (reduce) -- (output);
+
+\end{tikzpicture}
+}
+\caption{Sequence pipeline for SVD}
+\label{fig:pipeline_svd}
+\end{figure}
+\subsection{Giảm chiều dữ liệu}
+
+Cho ma trận dữ liệu gốc:
+\[
+X \in \mathbb{R}^{n \times d}.
+\]
+
+Ta thực hiện phân rã giá trị kỳ dị theo định nghĩa gốc~\cite{golub2013matrix}:
+\[
+X = \sum_{i=1}^{r} \sigma_i u_i v_i^T = U \Sigma V^T
+\]
+
+Trong đó:
+\begin{itemize}
+    \item \(r = \text{rank}(X)\)
+    \item \(\sigma_i\) là giá trị kì dị
+    \item \(u_i\) là vector riêng bên trái
+    \item \(v_i\) là vector riêng bên phải.
+    \item \(U \in \mathbb{R}^{n \times n}\): ma trận trực chuẩn chứa các \textit{vector riêng trái};
+    \item \(\Sigma \in \mathbb{R}^{n \times d}\): ma trận đường chéo chứa các giá trị kỳ dị \(\sigma_1 \ge \sigma_2 \ge \dots \ge \sigma_r > 0\);
+    \item \(V \in \mathbb{R}^{d \times d}\): ma trận trực chuẩn chứa các \textit{vector riêng phải}, cũng chính là các hướng cơ sở mới.
+\end{itemize}
+
+Để giảm chiều xuống \(k\) chiều, ta chỉ giữ lại \(k\) vector cơ sở quan trọng nhất:
+\[
+V_k = [v_1, v_2, \dots, v_k]
+\]
+
+Dữ liệu sau khi giảm chiều:
+\[
+X_{\text{reduced}} = X V_k
+\]
+\section{Nhân ma trận}
+
+Phép nhân ma trận là phép toán cơ bản và quan trọng trong đại số tuyến tính, nó là thành phần quan trọng không thể thiếu trong nhiều thuật toán giảm chiều, đặc biệt là trong quá trình tính toán ma trận hiệp phương sai và phân rã ma trận. Ma trận X chỉ có thể nhân với ma trận B   nếu \( X \in \mathbb{R}^{m \times n} \) và \( B \in \mathbb{R}^{n \times p} \), thì ma trận kết quả \( C = AB \in \mathbb{R}^{m \times p} \) có phần tử:
+
+\[
+C_{ij} = \sum_{k=1}^{n} A_{ik} B_{kj}
+\]
+
+
+\paragraph{Nhận xét:}  Quan sát ngay ở công thức trên các phần tử trên ma trận $C$ (ô $C_{ij}$) không phụ thuộc lẫn nhau mà nó chỉ phụ thuộc vào các phần tử trên ma trận $X$ và $B$ mà $X$ và $B$ đều không thay đổi sau mỗi lần tính các phần tử. Ngoài ra quy mỗi thành phần là tổng của tích k cặp $A_{ik}$ và $B_{kj}$ hay nói cách khác là $<A_i, B_j^T>$ (<a, b> là tích vô hướng của a và b). Qua đó có thể thấy phép toán nhân ma trận có khả năng song song hóa cực kì cao do các phép toán tính ma trận tích độc lập với nhau.
+
+\paragraph{Ứng dụng:}
+Nhân ma trận là một phép toán cơ bản trong các thuật toán giảm chiều dữ liệu. Trên cơ sở hình học, phép nhân ma trận được sử dụng để thực hiện các phép biến đổi tuyến tính, chẳng hạn như quay, co giãn hoặc chiếu dữ liệu từ không gian ban đầu sang không gian mới có số chiều nhỏ hơn. Ngoài ra, phép nhân ma trận còn đóng vai trò quan trọng trong việc tính toán các bước trung gian và các thành phần của quá trình phân rã ma trận. \textbf{Ví dụ:} Tính $X^TX$, $X_{normalized}V_K$,...
+
+\paragraph{Độ phức tạp và Hiệu suất:}
+Đối với hai ma trận vuông cấp $n$, độ phức tạp tính toán của thuật toán nhân ma trận thông thường là $O(n^3)$. Khi thực hiện song song trên $p$ bộ xử lý, lý thuyết cho thấy độ phức tạp có thể giảm xuống $O(n^3/p)$ nếu bỏ qua chi phí truyền thông~\cite{xu-lecture07}. Tuy nhiên, trong thực tế, hiệu suất còn phụ thuộc vào kiến trúc bộ nhớ và băng thông giao tiếp giữa các luồng hoặc node tính toán.
+
+
+\newpage
+\section{Giá trị riêng}
+
+Giá trị riêng (Eigenvalues) và vector riêng (Eigenvectors) là các khái niệm cơ bản trong đại số tuyến tính.  
+Với ma trận vuông \( X \in \mathbb{R}^{n \times n} \), giá trị riêng \(\lambda\) và vector riêng \(v \in \mathbb{R}^n\) thỏa mãn~\cite{golub2013matrix}:
+
+\[
+X v = \lambda v
+\]
+
+Các giá trị riêng và vector riêng giúp xác định hướng chính và mức độ biến thiên của dữ liệu, là cơ sở để phân rã SVD.
+
+\subsection{Phương pháp tính cơ bản:}
+\begin{itemize}
+    \item Tính giá trị riêng:
+$$
+    \begin{aligned}
+    &Av &=& \lambda v\\
+    \Leftrightarrow & (X - \lambda I_n)v &=& 0  \text{ (1)}\\
+    \end{aligned}
+$$
+    Ta có: $(X - \lambda I_n)v = 0$ khi $X - \lambda I_n$ là suy biến nên ta có $det(X - \lambda I_n) = 0$ (2)\\
+    Trong đó:
+    \begin{itemize}
+        \item $v \in\mathbb{R}^{n}$ là vector riêng của X
+        \item (2) được gọi là phương trình đặc trưng của ma trận, giải nó ta sẽ thu được các giá trị riêng của X.
+    \end{itemize} 
+    \item Tính vector riêng: Ứng với giá trị riêng $\lambda_i$ là vector riêng $v_i$, để tính được $v_i$ thì thay giá trị riêng $\lambda_i$ vào (1) thì ta sẽ tính được vector riêng $v_i$ ứng với $\lambda_i$.
+\end{itemize}
+
+\paragraph{Nhận xét:} Phương thức tính này tìm ra được các giá trị riêng chính xác bằng cách giải phương trình. Tuy nhiên trong hệ thống máy tính việc giải (2) tốn quá nhiều chi phí, phải tính tuần tự và dính đến sai số cao nên khó song song hóa. Do vậy nhóm không chọn sử dụng phương pháp này đề thực hiện tính giá trị riêng cho bài toán này. Sẽ chuyển sang phương phương pháp tính toán phù hợp hơn.
+
+% \newpage\subsection{Phương pháp Jacobi cổ điển}
+% Phương pháp \textit{Jacobi cổ điển} (Classical Jacobi Method) là một thuật toán kinh điển dùng để tìm \textbf{giá trị riêng} và \textbf{vector riêng} của các ma trận đối xứng thực \( X \in \mathbb{R}^{n \times n}, X = X^T \).  
+% Phương pháp này dựa trên dãy các phép quay trực giao (orthogonal rotations) nhằm đưa ma trận \(X\) về dạng chéo, trong đó các phần tử trên đường chéo là các giá trị riêng của \(X\).
+
+% \paragraph{Mục tiêu} của phương pháp là tìm ma trận trực giao \( Q \) sao cho:
+% \[
+% X = Q \Lambda Q^T,
+% \]
+% với \( \Lambda \) là ma trận chéo chứa các giá trị riêng của \(X\), còn các cột của \(Q\) là các vector riêng trực chuẩn tương ứng.
+
+% \paragraph{Nguyên lý} của phương pháp Jacobi cổ điển dựa trên việc lặp lại các \textbf{phép quay trực giao hai chiều} (Jacobi rotations) để triệt tiêu dần các phần tử ngoài đường chéo của ma trận đối xứng.  
+% Tại mỗi bước lặp, ta chọn cặp chỉ số \( (p, q) \) sao cho phần tử ngoài đường chéo \( |a_{pq}| \) là lớn nhất, rồi xây dựng ma trận quay:
+% \[
+% J(p,q,\theta) =
+% \begin{bmatrix}
+% 1      &        &        &        &        \\
+%        & \ddots &        &        &        \\
+%        &        & c      & s      &        \\
+%        &        & -s     & c      &        \\
+%        &        &        &        & \ddots \\
+% \end{bmatrix},
+% \]
+% với \( c = \cos \theta \) và \( s = \sin \theta \), sao cho phần tử \( a_{pq} \) bị triệt tiêu.  
+% Góc quay được chọn thỏa:
+% \[
+% \tan(2\theta) = \frac{2a_{pq}}{a_{qq} - a_{pp}}.
+% \]
+
+% Sau đó, ma trận được cập nhật theo quy tắc:
+% \[
+% A_{k+1} = J(p,q,\theta)^T A_k J(p,q,\theta),
+% \]
+% với \(A_0 = X\).  
+% Vì \( J(p,q,\theta) \) là trực giao, ta có:
+% \[
+% A_{k+1} = A_{k+1}^T,
+% \]
+% tức là đối xứng được bảo toàn qua từng bước lặp.
+
+% \paragraph{Tính chất giảm chuẩn.}  
+% Mỗi phép quay Jacobi làm giảm tổng bình phương các phần tử ngoài đường chéo:
+% \[
+% \|A_{k+1,\text{off}}\|_F^2 < \|A_{k,\text{off}}\|_F^2,
+% \]
+% nên dãy \(A_k\) hội tụ dần về ma trận chéo \( \Lambda \).  
+% Khi hội tụ, ta thu được:
+% \[
+% A_k \to \Lambda, \quad Q = J_0 J_1 \dots J_{K-1},
+% \]
+% với \( Q \) là ma trận trực giao chứa các vector riêng của \(X\).
+
+% \paragraph{Nhận xét:}
+% Phương pháp Jacobi cổ điển có \textbf{độ hội tụ bậc hai} và \textbf{độ ổn định số học cao}, do mọi phép biến đổi trong quá trình thực hiện đều là \textbf{phép quay trực giao}, nhờ đó \textbf{bảo toàn chuẩn Frobenius} của ma trận. Thuật toán đặc biệt hiệu quả khi áp dụng cho \textbf{ma trận đối xứng thực}, bởi chỉ cần sử dụng các phép quay đơn giản vẫn có thể triệt tiêu toàn bộ các phần tử ngoài đường chéo.
+
+% Ngoài ra, phương pháp Jacobi có khả năng \textbf{song song hóa} cao, thông qua việc thực hiện đồng thời các phép quay trên những \textbf{cặp chỉ số không giao nhau (disjoint pairs)}. Khi đó, các phần tử ngoài đường chéo được triệt tiêu độc lập, không gây ảnh hưởng lẫn nhau, giúp tận dụng hiệu quả kiến trúc \textbf{đa lõi (multi-core)} hoặc \textbf{GPU}, từ đó giảm đáng kể thời gian tính toán so với phương pháp thực thi tuần tự.
+
+% Tuy nhiên, phương pháp Jacobi cổ điển chỉ áp dụng được cho \textbf{ma trận đối xứng thực}, nên vẫn tồn tại những hạn chế nhất định. Do đó, ở phần tiếp theo, ta sẽ xem xét một phương pháp khác.
+
+\subsection{Phương pháp Giảm chuẩn Jacobi (Norm-Reducing Jacobi Method)}
+Phương pháp Giảm chuẩn Jacobi là một biến thể mở rộng của phương pháp Jacobi cổ điển, được thiết kế để giải quyết bài toán trị riêng cho các ma trận tổng quát (ma trận không đối xứng hoặc ma trận phức).
+
+\paragraph{Mục tiêu} 
+Mục tiêu chính của thuật toán là cực tiểu hóa chuẩn Frobenius của các phần tử ngoài đường chéo, qua đó giảm "độ lệch chuẩn" (departure from normality) của ma trận, đưa ma trận về dạng gần với ma trận chuẩn (normal matrix) để có thể chéo hóa bằng các phép biến đổi đơn vị.
+
+\paragraph{Nguyên lý} 
+Phương pháp \textit{Giảm chuẩn Jacobi} (\textit{Norm-Reducing Jacobi Method}) được xây dựng dựa trên ý tưởng thực hiện một chuỗi các \textbf{phép biến đổi tương tự} (\textit{similarity transformations}). Tại bước lặp thứ $k$, ma trận $M_k$ được cập nhật theo công thức:
+\begin{equation}
+    M_{k+1} = T_k^{-1}M_kT_k,
+\end{equation}
+trong đó $T_k$ là ma trận biến đổi khả nghịch được lựa chọn sao cho:
+\begin{equation}
+    \|M_{k+1}\|_F \leq \|M_k\|_F.
+\end{equation}
+Theo Eberlein (1987) và Shroff (1989), dãy ma trận $\{M_k\}$ sẽ hội tụ về dạng ma trận gần chéo (quasi-diagonal), với các phần tử trên đường chéo xấp xỉ các giá trị riêng của ma trận ban đầu.
+
+Các phép biến đổi $T_k$ thường là sự kết hợp của các loại sau:
+\begin{itemize}
+    \item \textbf{Phép quay đơn vị (Unitary Rotation):} Tác động lên mặt phẳng $(p,q)$ nhằm triệt tiêu phần tử $m_{qp}$ hoặc $m_{pq}$.
+    \item \textbf{Phép cắt (Shear Transformation):} Là phép biến đổi không đơn vị, đóng vai trò quan trọng trong việc giảm độ lệch chuẩn của ma trận, tức là giảm chuẩn của ma trận giao hoán tử $C = MM^* - M^*M$ (với $M^*$ là ma trận chuyển vị liên hợp).
+    \item \textbf{Phép biến đổi chéo (Diagonal Transformation):} Tác động lên các phần tử đường chéo để hỗ trợ giảm chuẩn Frobenius mà không làm thay đổi phổ của ma trận.
+\end{itemize}
+
+Các phép biến đổi này có thể được kết hợp thành một \textbf{phép quay tổng hợp (composite rotation)}, nhằm bảo đảm rằng mỗi bước lặp đều làm giảm chuẩn Frobenius của ma trận. Nhờ tính chất này, phương pháp Giảm chuẩn Jacobi đạt được \textbf{độ hội tụ bậc hai} khi ma trận là khả chéo (diagonalizable), đồng thời có thể được \textbf{song song hóa hiệu quả} trên các kiến trúc đa lõi hoặc GPU, với độ phức tạp đạt $O(n\log^2 n)$ khi sử dụng $n^2/4$ bộ xử lý~\cite{Shroff1989}.
+
+\paragraph{Nhận xét}
+Phương pháp Giảm chuẩn Jacobi có thể được xem là một mở rộng tự nhiên của phương pháp Jacobi cổ điển sang lớp ma trận tổng quát. Ưu điểm nổi bật của phương pháp là:
+\begin{itemize}
+    \item Áp dụng được cho \textbf{ma trận không đối xứng hoặc phức}.
+    \item Duy trì \textbf{tính ổn định số học cao}, do các phép biến đổi được xây dựng sao cho không làm tăng sai số làm tròn và vẫn bảo toàn chuẩn Frobenius của ma trận.
+    \item Có khả năng \textbf{song song hóa mạnh}, nhờ các phép biến đổi trên những cặp chỉ số không giao nhau có thể được thực hiện độc lập.
+\end{itemize}
+
+Tuy nhiên, phương pháp này cũng tồn tại một số \textbf{hạn chế}:
+\begin{itemize}
+    \item Chi phí tính toán cho mỗi phép biến đổi cao hơn so với Jacobi cổ điển, do phải xử lý cả phần thực và phần ảo của ma trận, cũng như cần duy trì điều kiện giảm chuẩn toàn cục.
+    \item Số bước lặp cần thiết có thể lớn đối với ma trận kích thước lớn hoặc có phổ giá trị riêng gần nhau.
+    \item Việc cài đặt thuật toán hiệu quả đòi hỏi phải \textbf{tối ưu hoá truy cập bộ nhớ} và \textbf{phân phối dữ liệu hợp lý} khi triển khai trên các hệ thống song song.
+\end{itemize}
+
+Tổng hợp lại, phương pháp Giảm chuẩn Jacobi cung cấp một hướng tiếp cận \textbf{tổng quát, ổn định và có thể song song hóa tốt}. Tuy nhiên, trong phạm vi bài toán cụ thể này, chúng ta sẽ áp dụng một phiên bản tối ưu hơn cho dữ liệu thực đối xứng.
+
+\section{Đánh giá hiệu suất}
+
+Trong các thuật toán song song như giảm chiều hoặc nhân ma trận, việc đo lường hiệu suất giúp đánh giá mức độ tận dụng phần cứng.
+
+\subsection{Mức độ tăng tốc và hiệu năng}
+\begin{itemize}
+    \item \textbf{Độ tăng tốc (Speedup, $S$)} đo mức cải thiện thời gian chạy so với tuần tự: 
+    \[
+    S = \frac{T_{seq}}{T_{par}}
+    \]
+    với $T_{seq}$ là thời gian tuần tự, $T_{par}$ là thời gian song song trên $p$ đơn vị xử lý.
+    \item \textbf{Hiệu suất (Efficiency, $E$)} biểu thị đóng góp trung bình của mỗi đơn vị xử lý:
+    \[
+    E = \frac{S}{p}, \quad E \le 1
+    \]
+\end{itemize}
+
+\subsection{Định luật Amdahl}
+Độ tăng tốc lý thuyết khi chỉ một phần chương trình có thể song song hóa:
+\[
+S(P) = \frac{1}{1 - b + \frac{b}{s}}
+\]
+với $b$ là tỷ lệ phần có thể song song hóa, $s$ là hệ số tăng tốc phần song song. Tổng quát cho nhiều phần:
+\[
+S(P) = \frac{1}{\sum_i \frac{b_i}{s_i}}.
+\]
+
+\subsection{Định lý Brent}
+Ước lượng thời gian chạy song song khi số đơn vị xử lý bị giới hạn:
+\[
+T_{par,R}(P) = O\left(\frac{W}{p} + T_{par,M}(P)\right)
+\]
+với $W$ là tổng số thao tác, $T_{par,M}(P)$ là thời gian chạy trên máy đủ nhiều đơn vị xử lý, $p$ là số đơn vị thực tế.
+
+\subsection{Thời gian giao tiếp}
+Trong hệ thống phân tán, thời gian giao tiếp:
+\[
+t_{comm} = t_s + t_d, \quad t_d = m \, t_w
+\]
+với $t_s$ là thời gian khởi tạo, $m$ số từ dữ liệu, $t_w$ thời gian truyền một từ. Băng thông kênh là $1/t_w$.
+
+\paragraph{Tóm lại} Các công thức trên giúp đánh giá tốc độ, hiệu suất và chi phí giao tiếp trong các thuật toán song song, đồng thời dự đoán giới hạn tăng tốc tối đa khi triển khai trên CPU đa lõi hoặc hệ thống phân tán.

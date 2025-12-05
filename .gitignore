@@ -1,2 +1,8 @@
 data/*.pdf
 test/visualizing.ipynb
+LATEX_template/*
+!LATEX_template/*.tex
+!LATEX_template/chapters/
+LATEX_template/chapters/*.aux
+!LATEX_template/images/
+!LATEX_template/*.bib
