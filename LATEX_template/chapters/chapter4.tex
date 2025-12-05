@@ -216,3 +216,32 @@ Dựa trên bảng số liệu thực nghiệm (file \texttt{decompose.csv}), ta
         \item \textbf{Kết luận:} Thuật toán SVD song song chỉ thực sự phát huy tác dụng với các bộ dữ liệu lớn, nơi khối lượng tính toán đủ lớn để che lấp chi phí quản lý luồng.
     \end{itemize}
 \end{itemize}
+
+\section{Tổng hợp và So sánh hiệu năng}
+
+Dựa trên các kết quả thực nghiệm chi tiết ở trên, bảng dưới đây tổng hợp các chỉ số hiệu năng quan trọng của các thuật toán đã triển khai:
+
+\begin{table}[H]
+\centering
+\caption{Bảng so sánh hiệu năng các thuật toán song song}
+\label{tab:performance_summary}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{|l|c|c|l|}
+\hline
+\textbf{Thuật toán} & \textbf{Speedup tối đa ($S_{max}$)} & \textbf{Điểm bão hòa (Luồng)} & \textbf{Đặc điểm chính} \\ \hline
+Nhân ma trận (Cannon) & $\approx 11.3$ & 9 ($3 \times 3$) & Tăng tốc siêu tuyến tính nhờ tối ưu cache (blocking). \\ \hline
+Nhân ma trận (DNS) & $\approx 8.5$ & 8 ($2 \times 2 \times 2$) & Hiệu quả với số luồng lập phương, chi phí truyền thông cao. \\ \hline
+Jacobi (Trị riêng) & $\approx 4.4$ & - & Cần đồng bộ hóa liên tục, hiệu quả cao với $N \ge 1024$. \\ \hline
+SVD Decomposition & $\approx 4.6$ & - & Chỉ hiệu quả với dữ liệu lớn ($N > 3000$), overhead lớn ở $N$ nhỏ. \\ \hline
+Sắp xếp (Argsort) & $\approx 4.4$ & 8 & Bị giới hạn bởi băng thông bộ nhớ khi merge. \\ \hline
+Chuyển vị (Transpose) & $\approx 5.0$ & 6 & Memory-bound, bão hòa sớm do nghẽn băng thông. \\ \hline
+Căn bậc hai (Square) & $\approx 3.8$ & 6-8 & Tác vụ quá nhẹ, chi phí quản lý luồng chiếm ưu thế. \\ \hline
+\end{tabular}%
+}
+\end{table}
+
+\paragraph{Nhận xét chung:}
+\begin{itemize}
+    \item \textbf{Nhóm thuật toán tính toán nặng (Compute-bound):} Bao gồm nhân ma trận (Cannon, DNS) và phân rã SVD/Jacobi. Các thuật toán này đạt hệ số tăng tốc tốt và có khả năng mở rộng (scalability) cao khi kích thước dữ liệu tăng. Đặc biệt, thuật toán Cannon đạt hiệu suất vượt trội nhờ khai thác tốt bộ nhớ cache.
+    \item \textbf{Nhóm thuật toán giới hạn bộ nhớ (Memory-bound):} Bao gồm Chuyển vị, Sắp xếp và các phép toán trên mảng đơn giản. Các thuật toán này nhanh chóng đạt điểm bão hòa ở số lượng luồng thấp (6-8 luồng) do băng thông bộ nhớ của hệ thống không đáp ứng kịp tốc độ xử lý của CPU đa nhân.
+\end{itemize}

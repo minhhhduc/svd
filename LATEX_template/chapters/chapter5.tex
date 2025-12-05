@@ -1,7 +1,57 @@
 \chapter{Mở rộng:}
-\section{Sử dụng SVD để giảm chiều bằng phương pháp PCA(Principal Component Analysis)}
+\section{Sử dụng SVD để giảm chiều bằng phương pháp PCA (Principal Component Analysis)}
 
 \section{Một số thuật toán tính giá trị riêng và vector riêng cho ma trận lớn}
-\subsection{Phương pháp QR iteration}
+\subsection{Phương pháp QR tính giá trị riêng, vector riêng (QR Method)}
+Phương pháp QR là một trong những thuật toán phổ biến và hiệu quả nhất để tính toàn bộ các giá trị riêng của một ma trận, đặc biệt là các ma trận không đối xứng. Thuật toán dựa trên việc thực hiện lặp đi lặp lại quá trình phân rã QR để đưa ma trận về dạng Schur (dạng tam giác trên).
 
-\subsection{Phương pháp D&C SVD ( Divide and Conquer SVD)}
+\paragraph{Phân rã QR~\cite{francis1961qr} và Phép biến đổi Householder~\cite{householder1958unitary}:}
+Cốt lõi của thuật toán là phân rã ma trận $A$ thành tích $A = QR$, với $Q$ là ma trận trực giao và $R$ là ma trận tam giác trên. Để thực hiện phân rã này một cách ổn định về mặt số học, người ta thường sử dụng phép biến đổi Householder.
+Ma trận phản xạ Householder được định nghĩa là $H = I - 2vv^T$, trong đó $v$ là vector Householder có chuẩn bằng 1. Phép biến đổi này có tác dụng triệt tiêu các phần tử nằm dưới đường chéo chính của một cột vector, giúp đưa ma trận về dạng tam giác trên~\cite{golub2013matrix}.
+
+\paragraph{Thuật toán QR Iteration:}
+Quy trình tính giá trị riêng diễn ra như sau~\cite{trefethen1997numerical}:
+Bắt đầu với $A_0 = A$, tại mỗi bước $k=1, 2, \dots$:
+\begin{enumerate}
+    \item Phân rã QR: $A_{k-1} = Q_k R_k$.
+    \item Cập nhật ma trận: $A_k = R_k Q_k$.
+\end{enumerate}
+Ta có $A_k = R_k Q_k = Q_k^T A_{k-1} Q_k$, nghĩa là $A_k$ đồng dạng với $A_{k-1}$, và do đó đồng dạng với ma trận gốc $A$. Khi $k \to \infty$, $A_k$ sẽ hội tụ về dạng tam giác trên (dạng Schur), và các phần tử trên đường chéo chính của $A_k$ chính là các giá trị riêng của $A$.
+
+\paragraph{Chiến lược song song hóa:}
+Để tăng tốc độ tính toán cho các ma trận lớn, ta có thể song song hóa cả hai giai đoạn của thuật toán:
+\begin{itemize}
+    \item \textbf{Giai đoạn phân rã QR:} Sử dụng kỹ thuật \textbf{Block Householder} để gộp nhiều vector Householder lại và áp dụng dưới dạng các phép nhân ma trận khối (Level 3 BLAS), giúp tận dụng tốt bộ nhớ cache và hiệu năng đa lõi~\cite{demmel2012communication}. Với các ma trận "cao và hẹp", thuật toán \textbf{TSQR (Tall Skinny QR)} được sử dụng để giảm thiểu chi phí giao tiếp.
+    \item \textbf{Giai đoạn cập nhật:} Phép nhân $R_k Q_k$ có thể được thực hiện song song dễ dàng bằng các thuật toán nhân ma trận như Cannon hoặc DNS.
+\end{itemize}
+
+\subsection{Phương pháp D\&C SVD (Divide and Conquer SVD)}
+
+Phương pháp Chia để trị (Divide and Conquer - D\&C) là một trong những thuật toán nhanh nhất và hiệu quả nhất để tính SVD cho các ma trận hai đường chéo (bidiagonal) hoặc tính trị riêng cho ma trận đối xứng ba đường chéo (symmetric tridiagonal). Thuật toán này đặc biệt phù hợp với tính toán song song nhờ tính chất đệ quy tự nhiên của nó \cite{golub2013matrix}.
+
+\paragraph{Ý tưởng chính:}
+Giả sử sau bước khử Householder, ta thu được ma trận hai đường chéo $B$. Để tính SVD của $B$, ta có thể chuyển về bài toán tính trị riêng của ma trận đối xứng ba đường chéo $T = B^T B$ (hoặc $BB^T$).
+Thuật toán D\&C hoạt động dựa trên việc chia ma trận $T$ kích thước $n \times n$ thành hai ma trận con $T_1$ và $T_2$ có kích thước xấp xỉ $n/2 \times n/2$ bằng một hiệu chỉnh hạng 1 (rank-1 modification):
+\begin{equation}
+    T = \begin{bmatrix} T_1 & 0 \\ 0 & T_2 \end{bmatrix} + \rho v v^T
+\end{equation}
+Trong đó $\rho$ là một hằng số và $v$ là một vector.
+
+\paragraph{Các bước thực hiện:}
+\begin{enumerate}
+    \item \textbf{Chia (Divide):} Tách ma trận $T$ thành hai bài toán con độc lập $T_1$ và $T_2$.
+    \item \textbf{Trị (Conquer):} Gọi đệ quy thuật toán để tìm các trị riêng và vector riêng của $T_1$ và $T_2$.
+    \item \textbf{Kết hợp (Merge):} Từ các trị riêng và vector riêng của $T_1, T_2$, tính toán trị riêng và vector riêng của $T$ thông qua việc giải phương trình thế kỷ (secular equation):
+    \begin{equation}
+        1 + \rho \sum_{i=1}^{n} \frac{v_i^2}{d_i - \lambda} = 0
+    \end{equation}
+    Việc tìm nghiệm của phương trình này có thể thực hiện song song cho từng trị riêng $\lambda$.
+\end{enumerate}
+
+\paragraph{Ưu điểm song song:}
+Thuật toán D\&C có khả năng song song hóa rất cao ở cả hai mức:
+\begin{itemize}
+    \item \textbf{Mức đệ quy:} Hai bài toán con $T_1$ và $T_2$ hoàn toàn độc lập và có thể được giải trên các nhóm vi xử lý khác nhau.
+    \item \textbf{Mức giải phương trình thế kỷ:} Việc tìm các nghiệm $\lambda$ trong bước Merge cũng độc lập với nhau.
+\end{itemize}
+Độ phức tạp tính toán của thuật toán thường là $O(n^2.3)$ trong thực tế nhờ hiện tượng "deflation" (khi các trị riêng trùng nhau hoặc vector $v$ có thành phần bằng 0), nhanh hơn so với QR Iteration ($O(n^3)$) \cite{trefethen1997numerical}.
