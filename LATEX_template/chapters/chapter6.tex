@@ -1,20 +1,20 @@
 \chapter{Tổng kết}
 
 \section{Kết luận}
-Trong đồ án này, chúng tôi đã tập trung nghiên cứu và triển khai thuật toán giảm chiều dữ liệu SVD (Singular Value Decomposition) với trọng tâm là tối ưu hóa hiệu năng thông qua kỹ thuật tính toán song song. Dựa trên các mục tiêu đã đề ra ở phần mở đầu, nhóm đã đạt được những kết quả cụ thể sau:
+Trong bài này, Đã tập trung nghiên cứu và triển khai thuật toán giảm chiều dữ liệu SVD (Singular Value Decomposition) với trọng tâm là tối ưu hóa hiệu năng thông qua kỹ thuật tính toán song song. Dựa trên các mục tiêu đã đề ra ở phần mở đầu, nhóm đã đạt được những kết quả cụ thể sau:
 
 \begin{itemize}
-    \item \textbf{Xây dựng thành công phiên bản song song của SVD:} Chúng tôi đã triển khai thuật toán \textit{Parallel Norm-Reducing Jacobi} để tính toán trị riêng và vector riêng cho ma trận hiệp phương sai. Thuật toán này đã được chứng minh là có khả năng hội tụ bậc hai và phù hợp với kiến trúc đa luồng.
+    \item \textbf{Xây dựng thành công phiên bản song song của SVD:} Đã triển khai thuật toán \textit{Parallel Norm-Reducing Jacobi} để tính toán trị riêng và vector riêng cho ma trận hiệp phương sai. Thuật toán này đã được chứng minh là có khả năng hội tụ bậc hai và phù hợp với kiến trúc đa luồng.
     
     \item \textbf{Tối ưu hóa các bài toán con:} Bên cạnh thuật toán chính, các thành phần quan trọng như nhân ma trận (Cannon, DNS), chuyển vị ma trận và sắp xếp cũng đã được song song hóa. Kết quả thực nghiệm cho thấy sự cải thiện đáng kể về thời gian thực thi, đặc biệt là với các ma trận kích thước lớn ($N > 1000$).
     
-    \item \textbf{Đánh giá hiệu năng toàn diện:} Chúng tôi đã thực hiện so sánh chi tiết giữa phiên bản tuần tự và song song trên nhiều kích thước dữ liệu khác nhau. Kết quả cho thấy thuật toán song song đạt hệ số tăng tốc (speedup) lên tới 4.6 lần trên hệ thống 12 luồng, khẳng định tính hiệu quả của phương pháp tiếp cận.
+    \item \textbf{Đánh giá hiệu năng toàn diện:} Đã thực hiện so sánh chi tiết giữa phiên bản tuần tự và song song trên nhiều kích thước dữ liệu khác nhau. Kết quả cho thấy thuật toán song song đạt hệ số tăng tốc (speedup) lên tới 4.6 lần trên hệ thống 12 luồng, khẳng định tính hiệu quả của phương pháp tiếp cận.
     
     \item \textbf{Ứng dụng thực tiễn trên MNIST:} Hệ thống đã được tích hợp thành công vào quy trình xử lý dữ liệu thực tế. Việc áp dụng PCA (dựa trên SVD song song tự xây dựng) để giảm chiều dữ liệu MNIST từ 784 xuống 50 chiều không chỉ giúp giảm chi phí huấn luyện mô hình MLP mà còn duy trì độ chính xác phân loại ở mức cao ($\approx 97\%$).
 \end{itemize}
 
 \section{Hạn chế}
-Mặc dù đã đạt được những kết quả khả quan, đồ án vẫn còn tồn tại một số hạn chế nhất định:
+Mặc dù đã đạt được những kết quả khả quan, bài vẫn còn tồn tại một số hạn chế nhất định:
 
 \begin{itemize}
     \item \textbf{Hiệu năng trên dữ liệu nhỏ:} Với các ma trận kích thước nhỏ ($N < 500$), chi phí quản lý luồng (overhead) và đồng bộ hóa vẫn chiếm tỷ trọng lớn, khiến thuật toán song song hoạt động chậm hơn so với phiên bản tuần tự.
@@ -25,7 +25,7 @@ Mặc dù đã đạt được những kết quả khả quan, đồ án vẫn c
 \end{itemize}
 
 \section{Hướng phát triển}
-Để khắc phục các hạn chế trên và nâng cao chất lượng của đồ án, một số hướng phát triển trong tương lai được đề xuất:
+Để khắc phục các hạn chế trên và nâng cao chất lượng, một số hướng phát triển trong tương lai được đề xuất:
 
 \begin{itemize}
     \item \textbf{Tối ưu hóa bộ nhớ:} Áp dụng các kỹ thuật tối ưu hóa bộ nhớ (cache blocking, loop tiling) sâu hơn nữa để giảm thiểu cache miss và tận dụng tốt hơn băng thông bộ nhớ.
