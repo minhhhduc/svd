@@ -195,7 +195,7 @@ Mặc dù thuật toán mang lại hiệu năng lý thuyết rất cao, cấu tr
 
 Trong phạm vi bài toán này, dữ liệu đầu vào là ma trận thực $A \in \mathbb{R}^{m \times d}$. Mục tiêu là tính giá trị riêng và vector riêng của ma trận hiệp phương sai (hoặc ma trận Gram) $X = A^T A$.
 
-Vì $X$ là ma trận đối xứng thực ($X = X^T$), nó thỏa mãn tính chất của ma trận chuẩn (normal matrix). Do đó, các phép biến đổi "Cắt" (Shear) và "Chéo" (Diagonal) trong phương pháp giảm chuẩn tổng quát của Eberlein trở nên không cần thiết (chúng trở thành các phép đồng nhất). Thuật toán lúc này quy về Phương pháp Jacobi cổ điển, chỉ sử dụng các phép quay trực giao để khử các phần tử ngoài đường chéo, nhưng được tổ chức theo chiến lược song song.
+Vì $X$ là ma trận đối xứng thực ($X = X^T$), nó thỏa mãn tính chất của ma trận chuẩn (normal matrix). Do đó, các phép biến đổi "Cắt" (Shear) và "Chéo" (Diagonal) trong phương pháp giảm chuẩn tổng quát của Eberlein trở nên không cần thiết (chúng trở thành các phép đồng nhất). Thuật toán lúc này quy về Phương pháp Jacobi cổ điển, chỉ sử dụng các phép quay trực giao để khử các phần tử ngoài đường chéo, nhưng được tổ chức theo chiến lược song song~\cite{Shroff1989}.
 
 \subsection{Mục tiêu và giả thiết}
 \begin{itemize}

@@ -1,31 +1,33 @@
 \chapter{Mở rộng:}
 \section{Sử dụng SVD để giảm chiều bằng phương pháp PCA (Principal Component Analysis)}
 
-\section{Một số thuật toán tính giá trị riêng và vector riêng cho ma trận lớn}
-\subsection{Phương pháp QR tính giá trị riêng, vector riêng (QR Method)}
-Phương pháp QR là một trong những thuật toán phổ biến và hiệu quả nhất để tính toàn bộ các giá trị riêng của một ma trận, đặc biệt là các ma trận không đối xứng. Thuật toán dựa trên việc thực hiện lặp đi lặp lại quá trình phân rã QR để đưa ma trận về dạng Schur (dạng tam giác trên).
+Phân tích thành phần chính (PCA) là một kỹ thuật quan trọng trong học máy và thống kê để giảm chiều dữ liệu. SVD cung cấp một phương pháp tính toán trực tiếp và hiệu quả cho PCA.
 
-\paragraph{Phân rã QR~\cite{francis1961qr} và Phép biến đổi Householder~\cite{householder1958unitary}:}
-Cốt lõi của thuật toán là phân rã ma trận $A$ thành tích $A = QR$, với $Q$ là ma trận trực giao và $R$ là ma trận tam giác trên. Để thực hiện phân rã này một cách ổn định về mặt số học, người ta thường sử dụng phép biến đổi Householder.
-Ma trận phản xạ Householder được định nghĩa là $H = I - 2vv^T$, trong đó $v$ là vector Householder có chuẩn bằng 1. Phép biến đổi này có tác dụng triệt tiêu các phần tử nằm dưới đường chéo chính của một cột vector, giúp đưa ma trận về dạng tam giác trên~\cite{golub2013matrix}.
+\paragraph{Cơ sở lý thuyết:}
+Cho một ma trận dữ liệu $X$ kích thước $m \times n$, trong đó $m$ là số lượng mẫu và $n$ là số lượng đặc trưng. Giả sử dữ liệu đã được chuẩn hóa (centered) sao cho trung bình của mỗi cột bằng 0.
+Ma trận hiệp phương sai của $X$ là $C = \frac{1}{m-1} X^T X$.
+Mục tiêu của PCA là tìm các vector riêng của $C$ tương ứng với các trị riêng lớn nhất.
 
-\paragraph{Thuật toán QR Iteration:}
-Quy trình tính giá trị riêng diễn ra như sau~\cite{trefethen1997numerical}:
-Bắt đầu với $A_0 = A$, tại mỗi bước $k=1, 2, \dots$:
+Sử dụng SVD cho $X$: $X = U \Sigma V^T$.
+Ta có:
+\begin{equation}
+    X^T X = (V \Sigma^T U^T) (U \Sigma V^T) = V \Sigma^2 V^T
+\end{equation}
+Điều này cho thấy các vector riêng của $X^T X$ chính là các cột của $V$ (các vector kỳ dị phải của $X$), và các trị riêng của $X^T X$ tỉ lệ với bình phương các giá trị kỳ dị của $X$ ($\lambda_i = \frac{\sigma_i^2}{m-1}$).
+
+\paragraph{Quy trình giảm chiều:}
+Để giảm số chiều dữ liệu từ $n$ xuống $k$ ($k < n$):
 \begin{enumerate}
-    \item Phân rã QR: $A_{k-1} = Q_k R_k$.
-    \item Cập nhật ma trận: $A_k = R_k Q_k$.
+    \item Tính SVD của ma trận dữ liệu $X$: $X = U \Sigma V^T$.
+    \item Chọn $k$ vector cột đầu tiên của $V$, tạo thành ma trận chiếu $V_k$ kích thước $n \times k$.
+    \item Chiếu dữ liệu gốc lên không gian mới: $X_{new} = X V_k$.
 \end{enumerate}
-Ta có $A_k = R_k Q_k = Q_k^T A_{k-1} Q_k$, nghĩa là $A_k$ đồng dạng với $A_{k-1}$, và do đó đồng dạng với ma trận gốc $A$. Khi $k \to \infty$, $A_k$ sẽ hội tụ về dạng tam giác trên (dạng Schur), và các phần tử trên đường chéo chính của $A_k$ chính là các giá trị riêng của $A$.
+Ma trận $X_{new}$ có kích thước $m \times k$, đại diện cho dữ liệu đã được giảm chiều nhưng vẫn giữ lại phần lớn phương sai (thông tin) của dữ liệu gốc.
 
-\paragraph{Chiến lược song song hóa:}
-Để tăng tốc độ tính toán cho các ma trận lớn, ta có thể song song hóa cả hai giai đoạn của thuật toán:
-\begin{itemize}
-    \item \textbf{Giai đoạn phân rã QR:} Sử dụng kỹ thuật \textbf{Block Householder} để gộp nhiều vector Householder lại và áp dụng dưới dạng các phép nhân ma trận khối (Level 3 BLAS), giúp tận dụng tốt bộ nhớ cache và hiệu năng đa lõi~\cite{demmel2012communication}. Với các ma trận "cao và hẹp", thuật toán \textbf{TSQR (Tall Skinny QR)} được sử dụng để giảm thiểu chi phí giao tiếp.
-    \item \textbf{Giai đoạn cập nhật:} Phép nhân $R_k Q_k$ có thể được thực hiện song song dễ dàng bằng các thuật toán nhân ma trận như Cannon hoặc DNS.
-\end{itemize}
+\paragraph{Ứng dụng trong đồ án:}
+Trong phần thực nghiệm, chúng tôi đã áp dụng quy trình này để giảm chiều các ma trận đầu vào. Cụ thể, với mỗi ma trận kích thước $m \times n$, chúng tôi thực hiện phân rã SVD song song để thu được $V$, sau đó chọn $k = n/2$ thành phần chính và thực hiện phép nhân ma trận để thu được dữ liệu giảm chiều. Đây là một ví dụ điển hình về việc áp dụng SVD trong xử lý dữ liệu thực tế.
 
-\subsection{Phương pháp D\&C SVD (Divide and Conquer SVD)}
+\section{Phương pháp D\&C SVD (Divide and Conquer SVD)}
 
 Phương pháp Chia để trị (Divide and Conquer - D\&C) là một trong những thuật toán nhanh nhất và hiệu quả nhất để tính SVD cho các ma trận hai đường chéo (bidiagonal) hoặc tính trị riêng cho ma trận đối xứng ba đường chéo (symmetric tridiagonal). Thuật toán này đặc biệt phù hợp với tính toán song song nhờ tính chất đệ quy tự nhiên của nó \cite{golub2013matrix}.
 
@@ -55,3 +57,73 @@ Thuật toán D\&C có khả năng song song hóa rất cao ở cả hai mức:
     \item \textbf{Mức giải phương trình thế kỷ:} Việc tìm các nghiệm $\lambda$ trong bước Merge cũng độc lập với nhau.
 \end{itemize}
 Độ phức tạp tính toán của thuật toán thường là $O(n^2.3)$ trong thực tế nhờ hiện tượng "deflation" (khi các trị riêng trùng nhau hoặc vector $v$ có thành phần bằng 0), nhanh hơn so với QR Iteration ($O(n^3)$) \cite{trefethen1997numerical}.
+
+\section{So sánh hiệu năng giữa LAPACK SVD và D\&C SVD}
+Để đánh giá hiệu năng của hai phương pháp SVD là LAPACK SVD~\cite{anderson1999lapack} và D\&C SVD, chúng ta đã thực hiện các thí nghiệm trên ma trận ngẫu nhiên với kích thước từ 100x100 đến 2000x2000. Kết quả thời gian tính toán được ghi lại và so sánh như sau:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/compare_decompes_lapack.png}
+    \caption{So sánh thời gian của thuật toán tự xây dựng và giữa LAPACK và D\&C SVD}
+    \label{fig:svd_comparison}
+\end{figure}
+Kết quả cho thấy rằng thuật toán D\&C SVD tự xây dựng có hiệu năng vượt trội so với LAPACK SVD, đặc biệt là với các ma trận có kích thước lớn. Điều này minh chứng cho tính hiệu quả của phương pháp chia để trị trong việc tính toán SVD, đồng thời cũng cho thấy tiềm năng của việc áp dụng các kỹ thuật song song hóa trong các thuật toán đại số tuyến tính.
+
+\section{Demo thuật toán đã triển khai ứng dụng trong học máy}
+\subsection{Bộ dữ liệu sử dụng}
+Chúng tôi sử dụng bộ dữ liệu \textit{MNIST} (Modified National Institute of Standards and Technology database)~\cite{lecun1998gradient} để thực hiện việc giảm chiều dữ liệu bằng phương pháp PCA dựa trên SVD. Bộ dữ liệu này bao gồm 70,000 hình ảnh chữ số viết tay (0-9), mỗi hình ảnh có kích thước 28x28 pixel, tương đương với 784 đặc trưng khi được vector hóa.
+\subsection{Quá trình thực hiện}
+\begin{itemize}
+    \item giảm chiều dữ liệu từ 784 đặc trưng xuống còn 50 đặc trưng sử dụng phương pháp PCA dựa trên SVD trên mô hình đã giảm chuẩn Jacobi đã triển khai.
+    \item xây dựng mô hình phân loại sử dụng thuật toán Multi-layer Perceptron (MLP) với một lớp ẩn gồm 100 neuron trên python.
+    \item huấn luyện mô hình trên tập dữ liệu đã giảm chiều và đánh giá hiệu năng trên tập kiểm tra.
+\end{itemize}
+
+\subsection{Kết quả}
+Mô hình MLP được huấn luyện trên dữ liệu đã giảm chiều (từ 784 xuống 50 chiều) đạt được độ chính xác cao trên tập kiểm tra. Cụ thể:
+
+\begin{itemize}
+    \item \textbf{Độ chính xác (Accuracy):} 97.2\% trên tập kiểm tra (14,000 mẫu).
+    \item \textbf{Thời gian huấn luyện:} Giảm đáng kể so với huấn luyện trên dữ liệu gốc.
+\end{itemize}
+
+Bảng dưới đây chi tiết hóa các chỉ số Precision, Recall và F1-score cho từng lớp (các chữ số từ 0 đến 9):
+
+\begin{table}[H]
+    \centering
+    \caption{Báo cáo phân loại (Classification Report)}
+    \label{tab:classification_report}
+    \resizebox{\textwidth}{!}{%
+        \begin{tabular}{lcccc}
+            \toprule
+            \textbf{Lớp (Digit)} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+            \midrule
+            0 & 0.98 & 0.99 & 0.98 & 1343 \\
+            1 & 0.99 & 0.99 & 0.99 & 1600 \\
+            2 & 0.96 & 0.97 & 0.97 & 1380 \\
+            3 & 0.97 & 0.96 & 0.96 & 1433 \\
+            4 & 0.98 & 0.97 & 0.97 & 1295 \\
+            5 & 0.97 & 0.97 & 0.97 & 1273 \\
+            6 & 0.98 & 0.98 & 0.98 & 1396 \\
+            7 & 0.97 & 0.97 & 0.97 & 1503 \\
+            8 & 0.96 & 0.96 & 0.96 & 1357 \\
+            9 & 0.96 & 0.96 & 0.96 & 1420 \\
+            \midrule
+            \textbf{Accuracy} & & & \textbf{0.97} & \textbf{14000} \\
+            \textbf{Macro Avg} & 0.97 & 0.97 & 0.97 & 14000 \\
+            \textbf{Weighted Avg} & 0.97 & 0.97 & 0.97 & 14000 \\
+            \bottomrule
+        \end{tabular}%
+    }
+\end{table}
+
+Hình dưới đây minh họa ma trận nhầm lẫn (Confusion Matrix), cho thấy sự phân bố của các dự đoán so với nhãn thực tế:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/confusion_matrix.png} % Uncomment và thay thế bằng file ảnh thực tế
+    \caption{Ma trận nhầm lẫn trên tập kiểm tra (Confusion Matrix)}
+    \label{fig:confusion_matrix}
+\end{figure}
+
+Kết quả cho thấy việc giảm chiều dữ liệu bằng thuật toán Jacobi SVD song song không chỉ giúp giảm đáng kể chi phí tính toán cho mô hình phân loại mà còn giữ lại được những đặc trưng quan trọng nhất, đảm bảo độ chính xác cao, với f1-score trung bình đạt 97\%. Điều này chứng tỏ hiệu quả của việc áp dụng SVD trong học máy, đặc biệt trong các bài toán xử lý ảnh và nhận dạng mẫu.
+

@@ -15,7 +15,35 @@ Các thí nghiệm được thực hiện trên một hệ thống di động s�
 \end{figure}
 
 \section{Bộ dữ liệu sử dụng}
-ma trận được sinh ngẫu nhiên với các kích cỡ khác nhau.
+Để đánh giá hiệu năng của các thuật toán, chúng tôi sử dụng bộ dữ liệu gồm các ma trận được sinh ngẫu nhiên với kích thước và đặc điểm đa dạng. Quá trình sinh dữ liệu được thực hiện bằng ngôn ngữ Python với thư viện NumPy.
+
+\paragraph{Đặc điểm dữ liệu:}
+\begin{itemize}
+    \item \textbf{Giá trị:} Các phần tử trong ma trận là số thực ngẫu nhiên (float) nằm trong khoảng $[0, 1000]$.
+    \item \textbf{Định dạng lưu trữ:} Mỗi ma trận được lưu trong một file văn bản (.txt). Dòng đầu tiên chứa hai số nguyên $m$ và $n$ tương ứng với số hàng và số cột. Các dòng tiếp theo chứa giá trị của ma trận.
+\end{itemize}
+
+\paragraph{Các kích thước thử nghiệm:}
+Chúng tôi đã tạo ra các bộ dữ liệu với kích thước tăng dần để kiểm tra khả năng mở rộng (scalability) của thuật toán. Các kích thước cụ thể bao gồm:
+
+\begin{table}[H]
+    \centering
+    \caption{Danh sách các kích thước ma trận sử dụng trong thực nghiệm}
+    \label{tab:dataset_sizes}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{STT} & \textbf{Kích thước ($m \times n$)} & \textbf{Số phần tử} & \textbf{Mô tả} \\ \hline
+        1 & $200 \times 128$ & 25,600 & Ma trận nhỏ \\ \hline
+        2 & $490 \times 64$ & 31,360 & Ma trận nhỏ, hẹp \\ \hline
+        3 & $500 \times 256$ & 128,000 & Ma trận trung bình \\ \hline
+        4 & $1000 \times 178$ & 178,000 & Ma trận trung bình, dài \\ \hline
+        5 & $750 \times 512$ & 384,000 & Ma trận trung bình lớn \\ \hline
+        6 & $3333 \times 768$ & 2,559,744 & Ma trận lớn \\ \hline
+        7 & $3000 \times 1024$ & 3,072,000 & Ma trận rất lớn \\ \hline
+    \end{tabular}
+\end{table}
+
+Việc lựa chọn các kích thước này giúp đánh giá hiệu năng thuật toán trong nhiều kịch bản khác nhau: từ ma trận nhỏ (vài chục nghìn phần tử) đến ma trận lớn (hàng triệu phần tử), và các ma trận có tỉ lệ hàng/cột khác nhau.
 
 \section{Đánh giá kết quả}
 
