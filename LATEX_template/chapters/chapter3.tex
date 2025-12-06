@@ -2,7 +2,7 @@
 
 \section{Nhân ma trận}
 
-Nhân ma trận là một phép toán nền tảng trong nhiều ứng dụng tính toán khoa học, mô phỏng số và học máy. Với hai ma trận  
+\text{}\indent Nhân ma trận là một phép toán nền tảng trong nhiều ứng dụng tính toán khoa học, mô phỏng số và học máy. Với hai ma trận  
 \[
 A \in \mathbb{R}^{m \times q}, \quad B \in \mathbb{R}^{q \times n},
 \]  
@@ -10,15 +10,14 @@ ma trận kết quả \(C \in \mathbb{R}^{m \times n}\) được xác định b�
 \[
 c_{ij} = \sum_{k=1}^{q} a_{ik} b_{kj}.
 \]
-Thuật toán tuần tự thực hiện phép nhân ba vòng lặp lồng nhau với độ phức tạp \(O(n^{3})\). Điều này khiến việc thiết kế các thuật toán song song nhằm giảm thời gian thực thi trở thành một yêu cầu quan trọng trong các hệ thống tính toán hiệu năng cao (HPC).
+\text{}\indent Thuật toán tuần tự thực hiện phép nhân ba vòng lặp lồng nhau với độ phức tạp \(O(n^{3})\). Điều này khiến việc thiết kế các thuật toán song song nhằm giảm thời gian thực thi trở thành một yêu cầu quan trọng trong các hệ thống tính toán hiệu năng cao (HPC).
 
 \subsection{Phân chia dữ liệu}
-
-Hiệu năng của một thuật toán song song phụ thuộc mạnh vào cách dữ liệu được phân phối lên các bộ xử lý. Ba phương pháp chính được xem xét trong luận văn này là phân chia một chiều (1D), hai chiều (2D) và ba chiều (3D). Mỗi phương pháp thể hiện mức độ cân bằng khác nhau giữa chi phí giao tiếp và khối lượng tính toán tại mỗi bộ xử lý.
+\text{}\indent Hiệu năng của một thuật toán song song phụ thuộc mạnh vào cách dữ liệu được phân phối lên các bộ xử lý. Ba phương pháp chính được xem xét trong luận văn này là phân chia một chiều (1D), hai chiều (2D) và ba chiều (3D). Mỗi phương pháp thể hiện mức độ cân bằng khác nhau giữa chi phí giao tiếp và khối lượng tính toán tại mỗi bộ xử lý.
 
 \subsubsection{Phân chia một chiều (1D Partitioning)}
 
-Trong phân chia 1D, ma trận \(A\) được chia theo hàng (hoặc cột) cho các bộ xử lý.  
+\text{}\indent Trong phân chia 1D, ma trận \(A\) được chia theo hàng (hoặc cột) cho các bộ xử lý.  
 Mỗi bộ xử lý giữ một phần của ma trận \(A\) và phải nhận toàn bộ ma trận \(B\) thông qua truyền thông.  
 
 Phương pháp này đơn giản nhưng chi phí giao tiếp lớn, đặc biệt khi số bộ xử lý tăng cao. Thuật toán nhân ma trận theo mô hình 1D đạt độ phức tạp tính toán:
@@ -32,19 +31,19 @@ T_{\text{comm}} = O(n \log p).
 
 \subsubsection{Phân chia hai chiều (2D Block Partitioning)}
 
-Trong phân chia 2D, ma trận \(A\) và \(B\) được chia thành các block kích thước đều nhau và phân phối lên lưới xử lý dạng \(p = q^{2}\).  
+\text{}\indent Trong phân chia 2D, ma trận \(A\) và \(B\) được chia thành các block kích thước đều nhau và phân phối lên lưới xử lý dạng \(p = q^{2}\).  
 Mỗi bộ xử lý lưu một block của \(A\), \(B\) và tương ứng tạo ra một block của \(C\).  
 Cách phân chia này giảm đáng kể lượng dữ liệu cần trao đổi, do mỗi bộ xử lý chỉ làm việc với block lân cận, nhờ đó mang lại hiệu năng tốt hơn so với phân chia 1D.
 
 \subsubsection{Phân chia ba chiều (3D Partitioning)}
 
-Phân chia 3D mở rộng cách tổ chức dữ liệu từ 2D sang cấu trúc khối ba chiều.  
+\text{}\indent Phân chia 3D mở rộng cách tổ chức dữ liệu từ 2D sang cấu trúc khối ba chiều.  
 Dữ liệu ma trận được nhân bản một phần theo chiều thứ ba, giúp giảm khối lượng tính toán tại mỗi bộ xử lý và đồng thời hạn chế xung đột giao tiếp.  
 Đây là cơ sở của thuật toán DNS được trình bày ở phần sau.
 
 \subsection{Thuật toán Broadcast 1D}
 
-Thuật toán Broadcast 1D nhân ma trận dựa trên mô hình phân chia theo hàng. Mỗi bộ xử lý lưu một dải hàng của ma trận \(A\), trong khi ma trận \(B\) được broadcast tới tất cả các bộ xử lý.
+\text{}\indent Thuật toán Broadcast 1D nhân ma trận dựa trên mô hình phân chia theo hàng. Mỗi bộ xử lý lưu một dải hàng của ma trận \(A\), trong khi ma trận \(B\) được broadcast tới tất cả các bộ xử lý.
 
 Quy trình thực hiện gồm:
 \begin{itemize}
@@ -61,7 +60,7 @@ trong đó thành phần thứ hai thể hiện chi phí truyền thông của t
 
 \subsection{Thuật toán Cannon}
 
-Thuật toán Cannon triển khai trên lưới xử lý hai chiều.  
+\text{}\indent Thuật toán Cannon triển khai trên lưới xử lý hai chiều.  
 Dữ liệu ban đầu được căn chỉnh (skew) bằng cách dịch vòng các block của ma trận \(A\) theo hàng và các block của ma trận \(B\) theo cột. Sau quá trình căn chỉnh, thuật toán thực hiện \(q\) vòng lặp, mỗi vòng gồm:
 \begin{itemize}
     \item Nhân block \(A_{ij}\) và \(B_{ij}\).
@@ -78,7 +77,7 @@ cho thấy mức độ cân bằng tốt giữa giao tiếp và tính toán, đ�
 
 \subsection{Thuật toán DNS (Dekel--Nassimi--Sahni)}
 
-Thuật toán DNS sử dụng phân chia dữ liệu ba chiều, trong đó mỗi chiều tương ứng với một trong ba chỉ số \(i, j, k\) của phép nhân ma trận.  
+\text{}\indent Thuật toán DNS sử dụng phân chia dữ liệu ba chiều, trong đó mỗi chiều tương ứng với một trong ba chỉ số \(i, j, k\) của phép nhân ma trận.  
 Ma trận được ánh xạ vào một lưới khối lập phương các bộ xử lý, cho phép mỗi bộ xử lý chỉ thực hiện một phần rất nhỏ của phép nhân:
 
 \[
@@ -193,7 +192,7 @@ Mặc dù thuật toán mang lại hiệu năng lý thuyết rất cao, cấu tr
 \end{algorithmic}
 \end{algorithm}
 
-Trong phạm vi bài toán này, dữ liệu đầu vào là ma trận thực $A \in \mathbb{R}^{m \times d}$. Mục tiêu là tính giá trị riêng và vector riêng của ma trận hiệp phương sai (hoặc ma trận Gram) $X = A^T A$.
+\text{}\indent Trong phạm vi bài toán này, dữ liệu đầu vào là ma trận thực $A \in \mathbb{R}^{m \times d}$. Mục tiêu là tính giá trị riêng và vector riêng của ma trận hiệp phương sai (hoặc ma trận Gram) $X = A^T A$.
 
 Vì $X$ là ma trận đối xứng thực ($X = X^T$), nó thỏa mãn tính chất của ma trận chuẩn (normal matrix). Do đó, các phép biến đổi "Cắt" (Shear) và "Chéo" (Diagonal) trong phương pháp giảm chuẩn tổng quát của Eberlein trở nên không cần thiết (chúng trở thành các phép đồng nhất). Thuật toán lúc này quy về Phương pháp Jacobi cổ điển, chỉ sử dụng các phép quay trực giao để khử các phần tử ngoài đường chéo, nhưng được tổ chức theo chiến lược song song~\cite{Shroff1989}.
 
@@ -204,7 +203,7 @@ Vì $X$ là ma trận đối xứng thực ($X = X^T$), nó thỏa mãn tính ch
 \end{itemize}
 
 \subsection{Chiến lược song song hóa}
-Để tận dụng kiến trúc đa xử lý, thuật toán không chọn phần tử lớn nhất để khử (như phương pháp cổ điển tuần tự) mà sử dụng chiến lược chia cặp và xoay vòng:
+\text{}\indent Để tận dụng kiến trúc đa xử lý, thuật toán không chọn phần tử lớn nhất để khử (như phương pháp cổ điển tuần tự) mà sử dụng chiến lược chia cặp và xoay vòng:
 
 \begin{itemize}
     \item \textbf{Chiến lược chia cặp (Pairing Strategy):} Tại mỗi bước, $d$ hàng/cột của ma trận $X$ được chia thành $d/2$ cặp chỉ số $(p, q)$ rời nhau. Điều này cho phép $d/2$ luồng tính toán thực hiện khử đồng thời các phần tử $X_{pq}$ mà không tranh chấp dữ liệu.
@@ -213,7 +212,7 @@ Vì $X$ là ma trận đối xứng thực ($X = X^T$), nó thỏa mãn tính ch
 \end{itemize}
 
 \subsection{Quy trình tính toán tại mỗi bước}
-Tại mỗi bước $k$, với mỗi cặp $(p, q)$ được phân công cho một luồng xử lý, các thao tác sau được thực hiện:
+\text{}\indent Tại mỗi bước $k$, với mỗi cặp $(p, q)$ được phân công cho một luồng xử lý, các thao tác sau được thực hiện:
 
 \paragraph{Tính tham số quay}
 Mục tiêu là tìm phép quay Jacobi $J_{p,q}$ để triệt tiêu phần tử $X_{pq}$. Các tham số $\tau, t, c, s$ được tính như sau:
@@ -250,7 +249,7 @@ Trong đó $c = \cos\theta$ và $s = \sin\theta$.
     Do tính đối xứng, ta cập nhật đồng thời: $X'_{jp} = X'_{pj}$ và $X'_{jq} = X'_{qj}$.
 \end{itemize}
 
-\paragraph{Cập nhật ma trận vector riêng $V$}
+\paragraph{Cập nhật ma trận vector riêng $V$:}
 Ma trận $V$ (khởi tạo là ma trận đơn vị $I$) tích lũy các phép quay để tạo thành ma trận vector riêng cuối cùng:
 \[
 \begin{aligned}
@@ -260,13 +259,13 @@ V'_{:,q} &= s\, V_{:,p} + c\, V_{:,q}
 \]
 
 \subsection{Nhận xét}
-Biến thể này kết hợp được ưu điểm về tốc độ hội tụ bậc hai của phương pháp Jacobi cổ điển trên ma trận đối xứng với khả năng mở rộng hiệu năng của chiến lược song song. Việc loại bỏ các phép biến đổi phức tạp (Shear) giúp giảm đáng kể chi phí tính toán trên mỗi bước lặp so với thuật toán Norm-Reducing tổng quát.
+\text{}\indent Biến thể này kết hợp được ưu điểm về tốc độ hội tụ bậc hai của phương pháp Jacobi cổ điển trên ma trận đối xứng với khả năng mở rộng hiệu năng của chiến lược song song. Việc loại bỏ các phép biến đổi phức tạp (Shear) giúp giảm đáng kể chi phí tính toán trên mỗi bước lặp so với thuật toán Norm-Reducing tổng quát.
 
 
 \section{Song song hóa các phần còn lại}
 \subsection{Song song hóa tính giá trị kì dị}
 
-Sau khi tính được ma trận \(\Lambda\) chứa \(d\) giá trị riêng, bước tiếp theo là xác định \(d\) giá trị kì dị tương ứng. Để tận dụng khả năng tính toán song song, chúng ta chia tổng số phép toán cho mỗi luồng (thread) như sau:
+\text{}\indent Sau khi tính được ma trận \(\Lambda\) chứa \(d\) giá trị riêng, bước tiếp theo là xác định \(d\) giá trị kì dị tương ứng. Để tận dụng khả năng tính toán song song, chúng ta chia tổng số phép toán cho mỗi luồng (thread) như sau:
 
 \[
 \text{số phép toán mỗi luồng} = \frac{d}{p},
@@ -276,7 +275,7 @@ trong đó \(p\) là số lượng luồng được sử dụng. Mỗi luồng s
 
 \subsection{Song song hóa sắp xếp theo giá trị kì dị}
 
-Giả sử chúng ta có \(k\) giá trị riêng và các vector riêng tương ứng. Để sắp xếp các giá trị kì dị theo thứ tự giảm dần (hoặc tăng dần) và đồng thời sắp xếp lại các cột của ma trận vector riêng, chúng ta áp dụng song song hóa như sau:
+\text{}\indent Giả sử chúng ta có \(k\) giá trị riêng và các vector riêng tương ứng. Để sắp xếp các giá trị kì dị theo thứ tự giảm dần (hoặc tăng dần) và đồng thời sắp xếp lại các cột của ma trận vector riêng, chúng ta áp dụng song song hóa như sau:
 
 \begin{itemize}
     \item Chia dữ liệu luồng: Mỗi luồng nhận một tập con các cặp giá trị riêng, vector riêng cần sắp xếp. Nếu có \(p\) luồng, mỗi luồng xử lý khoảng \(\frac{k}{p}\) cặp.  
@@ -290,13 +289,12 @@ T_2 = O\Big(\frac{n}{p} \log(n) - \log(p) + np\Big),
 trong đó \(n\) là số phần tử (giá trị kì dị) và \(p\) là số lượng luồng.
 
 \subsection{Chuyển vị ma trận}
-Để tăng hiệu quả tính toán, Ấp dụng phương pháp blocked parallel transpose kết hợp với OpenMP. Cụ thể, ma trận $A \in \mathbb{R}^{m \times n}$ được chia thành các block kích thước $B \times B$, và mỗi block được xử lý độc lập bởi một luồng:
+\text{}\indent Để tăng hiệu quả tính toán, Ấp dụng phương pháp blocked parallel transpose kết hợp với OpenMP. Cụ thể, ma trận $A \in \mathbb{R}^{m \times n}$ được chia thành các block kích thước $B \times B$, và mỗi block được xử lý độc lập bởi một luồng:
 
 \[\begin{matrix}
 B[jj][ii] &=& A[ii][jj], \\
 ii&=&i,\dots,\min(i+B-1,M-1), \\ jj&=&j,\dots,\min(j+B-1,N-1),
 \end{matrix}\]
-
 trong đó $(i,j)$ là tọa độ bắt đầu của block và $B$ là kích thước block.  
 
 Các block được phân phối cho $p$ luồng sử dụng chỉ thị OpenMP với `collapse(2)` để song song hóa cả hai vòng lặp bên ngoài. Kỹ thuật này vừa tận dụng tối đa khả năng đa luồng, vừa giảm thiểu cache-miss nhờ truy cập dữ liệu liên tiếp trong mỗi block.  

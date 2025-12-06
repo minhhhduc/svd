@@ -1,7 +1,6 @@
 \chapter{Mở rộng:}
 \section{Sử dụng SVD để giảm chiều bằng phương pháp PCA (Principal Component Analysis)}
-
-Phân tích thành phần chính (PCA) là một kỹ thuật quan trọng trong học máy và thống kê để giảm chiều dữ liệu. SVD cung cấp một phương pháp tính toán trực tiếp và hiệu quả cho PCA.
+\text{}\indent Phân tích thành phần chính (PCA) là một kỹ thuật quan trọng trong học máy và thống kê để giảm chiều dữ liệu. SVD cung cấp một phương pháp tính toán trực tiếp và hiệu quả cho PCA.
 
 \paragraph{Cơ sở lý thuyết:}
 Cho một ma trận dữ liệu $X$ kích thước $m \times n$, trong đó $m$ là số lượng mẫu và $n$ là số lượng đặc trưng. Giả sử dữ liệu đã được chuẩn hóa (centered) sao cho trung bình của mỗi cột bằng 0.
@@ -28,8 +27,7 @@ Ma trận $X_{new}$ có kích thước $m \times k$, đại diện cho dữ li�
 Trong phần thực nghiệm, chúng tôi đã áp dụng quy trình này để giảm chiều các ma trận đầu vào. Cụ thể, với mỗi ma trận kích thước $m \times n$, chúng tôi thực hiện phân rã SVD song song để thu được $V$, sau đó chọn $k = n/2$ thành phần chính và thực hiện phép nhân ma trận để thu được dữ liệu giảm chiều. Đây là một ví dụ điển hình về việc áp dụng SVD trong xử lý dữ liệu thực tế.
 
 \section{Phương pháp D\&C SVD (Divide and Conquer SVD)}
-
-Phương pháp Chia để trị (Divide and Conquer - D\&C) là một trong những thuật toán nhanh nhất và hiệu quả nhất để tính SVD cho các ma trận hai đường chéo (bidiagonal) hoặc tính trị riêng cho ma trận đối xứng ba đường chéo (symmetric tridiagonal). Thuật toán này đặc biệt phù hợp với tính toán song song nhờ tính chất đệ quy tự nhiên của nó \cite{golub2013matrix}.
+\text{}\indent Phương pháp Chia để trị (Divide and Conquer - D\&C) là một trong những thuật toán nhanh nhất và hiệu quả nhất để tính SVD cho các ma trận hai đường chéo (bidiagonal) hoặc tính trị riêng cho ma trận đối xứng ba đường chéo (symmetric tridiagonal). Thuật toán này đặc biệt phù hợp với tính toán song song nhờ tính chất đệ quy tự nhiên của nó \cite{golub2013matrix}.
 
 \paragraph{Ý tưởng chính:}
 Giả sử sau bước khử Householder, ta thu được ma trận hai đường chéo $B$. Để tính SVD của $B$, ta có thể chuyển về bài toán tính trị riêng của ma trận đối xứng ba đường chéo $T = B^T B$ (hoặc $BB^T$).
@@ -59,7 +57,7 @@ Thuật toán D\&C có khả năng song song hóa rất cao ở cả hai mức:
 Độ phức tạp tính toán của thuật toán thường là $O(n^2.3)$ trong thực tế nhờ hiện tượng "deflation" (khi các trị riêng trùng nhau hoặc vector $v$ có thành phần bằng 0), nhanh hơn so với QR Iteration ($O(n^3)$) \cite{trefethen1997numerical}.
 
 \section{So sánh hiệu năng giữa LAPACK SVD và D\&C SVD}
-Để đánh giá hiệu năng của hai phương pháp SVD là LAPACK SVD~\cite{anderson1999lapack} và D\&C SVD, chúng ta đã thực hiện các thí nghiệm trên ma trận ngẫu nhiên với kích thước từ 100x100 đến 2000x2000. Kết quả thời gian tính toán được ghi lại và so sánh như sau:
+\text{}\indent Để đánh giá hiệu năng của hai phương pháp SVD là LAPACK SVD~\cite{anderson1999lapack} và D\&C SVD, chúng ta đã thực hiện các thí nghiệm trên ma trận ngẫu nhiên với kích thước từ 100x100 đến 2000x2000. Kết quả thời gian tính toán được ghi lại và so sánh như sau:
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{images/compare_decompes_lapack.png}
@@ -70,7 +68,7 @@ Kết quả cho thấy rằng thuật toán D\&C SVD tự xây dựng có hiệu
 
 \section{Demo thuật toán đã triển khai ứng dụng trong học máy}
 \subsection{Bộ dữ liệu sử dụng}
-Chúng tôi sử dụng bộ dữ liệu \textit{MNIST} (Modified National Institute of Standards and Technology database)~\cite{lecun1998gradient} để thực hiện việc giảm chiều dữ liệu bằng phương pháp PCA dựa trên SVD. Bộ dữ liệu này bao gồm 70,000 hình ảnh chữ số viết tay (0-9), mỗi hình ảnh có kích thước 28x28 pixel, tương đương với 784 đặc trưng khi được vector hóa.
+\text{}\indent Chúng tôi sử dụng bộ dữ liệu \textit{MNIST} (Modified National Institute of Standards and Technology database)~\cite{lecun1998gradient} để thực hiện việc giảm chiều dữ liệu bằng phương pháp PCA dựa trên SVD. Bộ dữ liệu này bao gồm 70,000 hình ảnh chữ số viết tay (0-9), mỗi hình ảnh có kích thước 28x28 pixel, tương đương với 784 đặc trưng khi được vector hóa.
 \subsection{Quá trình thực hiện}
 \begin{itemize}
     \item giảm chiều dữ liệu từ 784 đặc trưng xuống còn 50 đặc trưng sử dụng phương pháp PCA dựa trên SVD trên mô hình đã giảm chuẩn Jacobi đã triển khai.
@@ -79,7 +77,7 @@ Chúng tôi sử dụng bộ dữ liệu \textit{MNIST} (Modified National Insti
 \end{itemize}
 
 \subsection{Kết quả}
-Mô hình MLP được huấn luyện trên dữ liệu đã giảm chiều (từ 784 xuống 50 chiều) đạt được độ chính xác cao trên tập kiểm tra. Cụ thể:
+\text{}\indent Mô hình MLP được huấn luyện trên dữ liệu đã giảm chiều (từ 784 xuống 50 chiều) đạt được độ chính xác cao trên tập kiểm tra. Cụ thể:
 
 \begin{itemize}
     \item \textbf{Độ chính xác (Accuracy):} 97.2\% trên tập kiểm tra (14,000 mẫu).
