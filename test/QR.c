@@ -6,7 +6,7 @@
 #include "../include/stream.h"
 #include "../include/mulmat.h"
 
-#define NUM_THREADS 8
+#define NUM_THREADS 12
 
 // Helper to allocate matrix
 double** allocate_matrix(int rows, int cols) {
