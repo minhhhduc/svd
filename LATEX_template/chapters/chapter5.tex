@@ -5,14 +5,14 @@
 \paragraph{Cơ sở lý thuyết:}
 Cho một ma trận dữ liệu $X$ kích thước $m \times n$, trong đó $m$ là số lượng mẫu và $n$ là số lượng đặc trưng. Giả sử dữ liệu đã được chuẩn hóa (centered) sao cho trung bình của mỗi cột bằng 0.
 Ma trận hiệp phương sai của $X$ là $C = \frac{1}{m-1} X^T X$.
-Mục tiêu của PCA là tìm các vector riêng của $C$ tương ứng với các trị riêng lớn nhất.
+Mục tiêu của PCA là tìm các vector riêng của $C$ tương ứng với các giá trị riêng lớn nhất.
 
 Sử dụng SVD cho $X$: $X = U \Sigma V^T$.
 Ta có:
 \begin{equation}
     X^T X = (V \Sigma^T U^T) (U \Sigma V^T) = V \Sigma^2 V^T
 \end{equation}
-Điều này cho thấy các vector riêng của $X^T X$ chính là các cột của $V$ (các vector kỳ dị phải của $X$), và các trị riêng của $X^T X$ tỉ lệ với bình phương các giá trị kỳ dị của $X$ ($\lambda_i = \frac{\sigma_i^2}{m-1}$).
+Điều này cho thấy các vector riêng của $X^T X$ chính là các cột của $V$ (các vector kỳ dị phải của $X$), và các giá trị riêng của $X^T X$ tỉ lệ với bình phương các giá trị kỳ dị của $X$ ($\lambda_i = \frac{\sigma_i^2}{m-1}$).
 
 \paragraph{Quy trình giảm chiều:}
 Để giảm số chiều dữ liệu từ $n$ xuống $k$ ($k < n$):
@@ -24,10 +24,10 @@ Ta có:
 Ma trận $X_{new}$ có kích thước $m \times k$, đại diện cho dữ liệu đã được giảm chiều nhưng vẫn giữ lại phần lớn phương sai (thông tin) của dữ liệu gốc.
 
 \section{Phương pháp D\&C SVD (Divide and Conquer SVD)}
-\text{}\indent Phương pháp Chia để trị (Divide and Conquer - D\&C) là một trong những thuật toán nhanh nhất và hiệu quả nhất để tính SVD cho các ma trận hai đường chéo (bidiagonal) hoặc tính trị riêng cho ma trận đối xứng ba đường chéo (symmetric tridiagonal). Thuật toán này đặc biệt phù hợp với tính toán song song nhờ tính chất đệ quy tự nhiên của nó \cite{golub2013matrix}.
+\text{}\indent Phương pháp Chia để trị (Divide and Conquer - D\&C) là một trong những thuật toán nhanh nhất và hiệu quả nhất để tính SVD cho các ma trận hai đường chéo (bidiagonal) hoặc tính giá trị riêng cho ma trận đối xứng ba đường chéo (symmetric tridiagonal). Thuật toán này đặc biệt phù hợp với tính toán song song nhờ tính chất đệ quy tự nhiên của nó \cite{golub2013matrix}.
 
 \paragraph{Ý tưởng chính:}
-Giả sử sau bước khử Householder, ta thu được ma trận hai đường chéo $B$. Để tính SVD của $B$, ta có thể chuyển về bài toán tính trị riêng của ma trận đối xứng ba đường chéo $T = B^T B$ (hoặc $BB^T$).
+Giả sử sau bước khử Householder, ta thu được ma trận hai đường chéo $B$. Để tính SVD của $B$, ta có thể chuyển về bài toán tính giá trị riêng của ma trận đối xứng ba đường chéo $T = B^T B$ (hoặc $BB^T$).
 Thuật toán D\&C hoạt động dựa trên việc chia ma trận $T$ kích thước $n \times n$ thành hai ma trận con $T_1$ và $T_2$ có kích thước xấp xỉ $n/2 \times n/2$ bằng một hiệu chỉnh hạng 1 (rank-1 modification):
 \begin{equation}
     T = \begin{bmatrix} T_1 & 0 \\ 0 & T_2 \end{bmatrix} + \rho v v^T
@@ -37,12 +37,12 @@ Trong đó $\rho$ là một hằng số và $v$ là một vector.
 \paragraph{Các bước thực hiện:}
 \begin{enumerate}
     \item \textbf{Chia (Divide):} Tách ma trận $T$ thành hai bài toán con độc lập $T_1$ và $T_2$.
-    \item \textbf{Trị (Conquer):} Gọi đệ quy thuật toán để tìm các trị riêng và vector riêng của $T_1$ và $T_2$.
-    \item \textbf{Kết hợp (Merge):} Từ các trị riêng và vector riêng của $T_1, T_2$, tính toán trị riêng và vector riêng của $T$ thông qua việc giải phương trình thế kỷ (secular equation):
+    \item \textbf{Trị (Conquer):} Gọi đệ quy thuật toán để tìm các giá trị riêng và vector riêng của $T_1$ và $T_2$.
+    \item \textbf{Kết hợp (Merge):} Từ các giá trị riêng và vector riêng của $T_1, T_2$, tính toán giá trị riêng và vector riêng của $T$ thông qua việc giải phương trình thế kỷ (secular equation):
     \begin{equation}
         1 + \rho \sum_{i=1}^{n} \frac{v_i^2}{d_i - \lambda} = 0
     \end{equation}
-    Việc tìm nghiệm của phương trình này có thể thực hiện song song cho từng trị riêng $\lambda$.
+    Việc tìm nghiệm của phương trình này có thể thực hiện song song cho từng giá trị riêng $\lambda$.
 \end{enumerate}
 
 \paragraph{Ưu điểm song song:}

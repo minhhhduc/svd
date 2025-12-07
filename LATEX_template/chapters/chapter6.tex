@@ -4,7 +4,7 @@
 Trong bài này, Đã tập trung nghiên cứu và triển khai thuật toán giảm chiều dữ liệu với SVD (Singular Value Decomposition) với trọng tâm là tối ưu hóa hiệu năng thông qua kỹ thuật tính toán song song. Dựa trên các mục tiêu đã đề ra ở phần mở đầu, nhóm đã đạt được những kết quả cụ thể sau:
 
 \begin{itemize}
-    \item \textbf{Xây dựng thành công phiên bản song song của SVD:} Đã triển khai thuật toán \textit{Parallel Norm-Reducing Jacobi} để tính toán trị riêng và vector riêng cho ma trận hiệp phương sai. Thuật toán này đã được chứng minh là có khả năng hội tụ bậc hai và phù hợp với kiến trúc đa luồng.
+    \item \textbf{Xây dựng thành công phiên bản song song của SVD:} Đã triển khai thuật toán \textit{Parallel Norm-Reducing Jacobi} để tính toán giá trị riêng và vector riêng cho ma trận hiệp phương sai. Thuật toán này đã được chứng minh là có khả năng hội tụ bậc hai và phù hợp với kiến trúc đa luồng.
     
     \item \textbf{Tối ưu hóa các bài toán con:} Bên cạnh thuật toán chính, các thành phần quan trọng như nhân ma trận (Cannon, DNS), chuyển vị ma trận và sắp xếp cũng đã được song song hóa. Kết quả thực nghiệm cho thấy sự cải thiện đáng kể về thời gian thực thi, đặc biệt là với các ma trận kích thước lớn ($N > 1000$).
     

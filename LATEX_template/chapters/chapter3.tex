@@ -263,19 +263,19 @@ V'_{:,q} &= s\, V_{:,p} + c\, V_{:,q}
 
 
 \section{Song song hóa các phần còn lại}
-\subsection{Song song hóa tính giá trị kì dị}
+\subsection{Song song hóa tính giá trị kỳ dị}
 
-\text{}\indent Sau khi tính được ma trận \(\Lambda\) chứa \(d\) giá trị riêng, bước tiếp theo là xác định \(d\) giá trị kì dị tương ứng. Để tận dụng khả năng tính toán song song, chúng ta chia tổng số phép toán cho mỗi luồng (thread) như sau:
+\text{}\indent Sau khi tính được ma trận \(\Lambda\) chứa \(d\) giá trị riêng, bước tiếp theo là xác định \(d\) giá trị kỳ dị tương ứng. Để tận dụng khả năng tính toán song song, chúng ta chia tổng số phép toán cho mỗi luồng (thread) như sau:
 
 \[
 \text{số phép toán mỗi luồng} = \frac{d}{p},
 \]
 
-trong đó \(p\) là số lượng luồng được sử dụng. Mỗi luồng sẽ chịu trách nhiệm tính giá trị kì dị của một tập con các giá trị riêng, đảm bảo rằng tất cả các giá trị kì dị được tính toán đồng thời và độc lập, từ đó tăng tốc độ tính toán tổng thể. vậy độ phức tạp thuật toán của phần này là $T_{1} = o(\frac{n}{p})$.
+trong đó \(p\) là số lượng luồng được sử dụng. Mỗi luồng sẽ chịu trách nhiệm tính giá trị kỳ dị của một tập con các giá trị riêng, đảm bảo rằng tất cả các giá trị kỳ dị được tính toán đồng thời và độc lập, từ đó tăng tốc độ tính toán tổng thể. vậy độ phức tạp thuật toán của phần này là $T_{1} = o(\frac{n}{p})$.
 
-\subsection{Song song hóa sắp xếp theo giá trị kì dị}
+    \subsection{Song song hóa sắp xếp theo giá trị kỳ dị}
 
-\text{}\indent Giả sử chúng ta có \(k\) giá trị riêng và các vector riêng tương ứng. Để sắp xếp các giá trị kì dị theo thứ tự giảm dần (hoặc tăng dần) và đồng thời sắp xếp lại các cột của ma trận vector riêng, chúng ta áp dụng song song hóa như sau:
+\text{}\indent Giả sử chúng ta có \(k\) giá trị riêng và các vector riêng tương ứng. Để sắp xếp các giá trị kỳ dị theo thứ tự giảm dần (hoặc tăng dần) và đồng thời sắp xếp lại các cột của ma trận vector riêng, chúng ta áp dụng song song hóa như sau:
 
 \begin{itemize}
     \item Chia dữ liệu luồng: Mỗi luồng nhận một tập con các cặp giá trị riêng, vector riêng cần sắp xếp. Nếu có \(p\) luồng, mỗi luồng xử lý khoảng \(\frac{k}{p}\) cặp.  
