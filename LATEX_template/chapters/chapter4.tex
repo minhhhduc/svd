@@ -212,11 +212,11 @@ Dựa trên kết quả thực nghiệm, ta có thể thấy rõ sự khác bi�
     \item \textbf{Lý do:} Tương tự như chuyển vị, đây là thao tác đơn giản trên từng phần tử. Thời gian thực thi quá nhanh khiến chi phí khởi tạo luồng chiếm tỷ trọng lớn, và băng thông bộ nhớ cũng trở thành nút thắt cổ chai.
 \end{itemize}
 
-\subsection{Thuật toán giảm chiều dữ liệu (SVD Decomposition)}
+\subsection{Thuật toán giảm chiều dữ liệu với SVD}
 \begin{figure}[H]
     \centering
     \includegraphics[width=1\linewidth]{images/compare_SVD.png}
-    \caption{Biểu đồ so sánh thời gian thực thi SVD giữa tuần tự và song song}
+    \caption{Biểu đồ so sánh thời gian thực thi thuật toán giảm chiều dữ liệu với SVD giữa tuần tự và song song}
     \label{fig:svd_compare}
 \end{figure}
 
@@ -240,7 +240,7 @@ Dựa trên bảng số liệu thực nghiệm (file \texttt{decompose.csv}), ta
     \begin{itemize}
         \item Hiệu quả song song hóa đạt mức cao nhất. Với ma trận $3333 \times 768$, thời gian giảm mạnh từ $71.3s$ xuống còn $15.6s$.
         \item \textbf{Hệ số tăng tốc:} $S \approx \frac{71.3}{15.6} \approx 4.6$ lần.
-        \item \textbf{Kết luận:} Thuật toán SVD song song chỉ thực sự phát huy tác dụng với các bộ dữ liệu lớn, nơi khối lượng tính toán đủ lớn để che lấp chi phí quản lý luồng.
+        \item \textbf{Kết luận:} Thuật toán giảm chiều dữ liệu với SVD song song chỉ thực sự phát huy tác dụng với các bộ dữ liệu lớn, nơi khối lượng tính toán đủ lớn để che lấp chi phí quản lý luồng.
     \end{itemize}
 \end{itemize}
 
@@ -259,7 +259,7 @@ Dựa trên bảng số liệu thực nghiệm (file \texttt{decompose.csv}), ta
 Nhân ma trận (Cannon) & $\approx 11.3$ & 9 ($3 \times 3$) & Tăng tốc siêu tuyến tính nhờ tối ưu cache (blocking). \\ \hline
 Nhân ma trận (DNS) & $\approx 8.5$ & 8 ($2 \times 2 \times 2$) & Hiệu quả với số luồng lập phương, chi phí truyền thông cao. \\ \hline
 Jacobi (Trị riêng) & $\approx 4.4$ & - & Cần đồng bộ hóa liên tục, hiệu quả cao với $N \ge 1024$. \\ \hline
-SVD Decomposition & $\approx 4.6$ & - & Chỉ hiệu quả với dữ liệu lớn ($N > 3000$), overhead lớn ở $N$ nhỏ. \\ \hline
+SVD & $\approx 4.6$ & - & Chỉ hiệu quả với dữ liệu lớn ($N > 3000$), overhead lớn ở $N$ nhỏ. \\ \hline
 Sắp xếp (Argsort) & $\approx 4.4$ & 8 & Bị giới hạn bởi băng thông bộ nhớ khi merge. \\ \hline
 Chuyển vị (Transpose) & $\approx 5.0$ & 6 & Memory-bound, bão hòa sớm do nghẽn băng thông. \\ \hline
 Căn bậc hai (Square) & $\approx 3.8$ & 6-8 & Tác vụ quá nhẹ, chi phí quản lý luồng chiếm ưu thế. \\ \hline

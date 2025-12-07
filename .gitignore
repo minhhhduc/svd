@@ -6,3 +6,4 @@ LATEX_template/*
 LATEX_template/chapters/*.aux
 !LATEX_template/images/
 !LATEX_template/*.bib
+!LATEX_template/*.pdf

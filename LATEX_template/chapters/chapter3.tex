@@ -1,8 +1,8 @@
-\chapter{Song song hóa thuật toán giảm chiều (SVD)}
+\chapter{Song song hóa thuật toán giảm chiều dữ liệu với SVD}
 
 \section{Nhân ma trận}
 
-\text{}\indent Nhân ma trận là một phép toán nền tảng trong nhiều ứng dụng tính toán khoa học, mô phỏng số và học máy. Với hai ma trận  
+\text{}\indent Nhân ma trận là một phép toán nền tảng trong nhiều ứng dụng tính toán khoa học, mô phỏng số và học máy. Các thuật toán song song trình bày dưới đây được tham khảo và tổng hợp từ các tài liệu giảng dạy về tính toán song song \cite{xu-lecture07}. Với hai ma trận  
 \[
 A \in \mathbb{R}^{m \times q}, \quad B \in \mathbb{R}^{q \times n},
 \]  
@@ -60,12 +60,12 @@ trong đó thành phần thứ hai thể hiện chi phí truyền thông của t
 
 \subsection{Thuật toán Cannon}
 
-\text{}\indent Thuật toán Cannon triển khai trên lưới xử lý hai chiều.  
-Dữ liệu ban đầu được căn chỉnh (skew) bằng cách dịch vòng các block của ma trận \(A\) theo hàng và các block của ma trận \(B\) theo cột. Sau quá trình căn chỉnh, thuật toán thực hiện \(q\) vòng lặp, mỗi vòng gồm:
+\text{}\indent Thuật toán Cannon \cite{cannon1969cellular} triển khai trên lưới xử lý hai chiều.  
+Dữ liệu ban đầu được căn chỉnh (skew) bằng cách dịch vòng các block của ma trận \(A\) theo hàng và các block của ma trận \(B\) theo cột. Cụ thể, hàng thứ \(i\) của ma trận \(A\) được dịch vòng sang trái \(i\) vị trí, và cột thứ \(j\) của ma trận \(B\) được dịch vòng lên trên \(j\) vị trí. Sau quá trình căn chỉnh, thuật toán thực hiện \(q\) vòng lặp, mỗi vòng gồm:
 \begin{itemize}
-    \item Nhân block \(A_{ij}\) và \(B_{ij}\).
-    \item Dịch block \(A\) sang trái một ô.
-    \item Dịch block \(B\) lên trên một ô.
+    \item Nhân block \(A_{ij}\) và \(B_{ij}\) cục bộ tại mỗi bộ xử lý.
+    \item Dịch block \(A\) sang trái một ô (theo chu kỳ).
+    \item Dịch block \(B\) lên trên một ô (theo chu kỳ).
 \end{itemize}
 
 Thuật toán đạt:
@@ -77,7 +77,7 @@ cho thấy mức độ cân bằng tốt giữa giao tiếp và tính toán, đ�
 
 \subsection{Thuật toán DNS (Dekel--Nassimi--Sahni)}
 
-\text{}\indent Thuật toán DNS sử dụng phân chia dữ liệu ba chiều, trong đó mỗi chiều tương ứng với một trong ba chỉ số \(i, j, k\) của phép nhân ma trận.  
+\text{}\indent Thuật toán DNS \cite{dekel1981parallel} sử dụng phân chia dữ liệu ba chiều, trong đó mỗi chiều tương ứng với một trong ba chỉ số \(i, j, k\) của phép nhân ma trận.  
 Ma trận được ánh xạ vào một lưới khối lập phương các bộ xử lý, cho phép mỗi bộ xử lý chỉ thực hiện một phần rất nhỏ của phép nhân:
 
 \[
