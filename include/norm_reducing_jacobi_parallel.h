@@ -1,5 +1,5 @@
-#ifndef NORM_REDUCING_JACOBI_V2_PARALLEL_H
-#define NORM_REDUCING_JACOBI_V2_PARALLEL_H
+#ifndef NORM_REDUCING_JACOBI_PARALLEL_H
+#define NORM_REDUCING_JACOBI_PARALLEL_H
 
 /**
  * @brief Compute eigenvalues and eigenvectors using Parallel Symmetric Jacobi Algorithm
@@ -11,4 +11,4 @@
  */
 void compute_eigenvalues_parallel(int n, const double* A_in, double* w, double* V_out);
 
-#endif // NORM_REDUCING_JACOBI_V2_PARALLEL_H
+#endif // NORM_REDUCING_JACOBI_PARALLEL_H

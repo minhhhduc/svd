@@ -7,7 +7,7 @@
 #include "../include/mulmat.h"
 #include "../include/stream.h"
 #include "../include/other_operating_serial.h"
-#include "../include/norm_reducing_jacobi_v2_serial.h"
+#include "../include/norm_reducing_jacobi_serial.h"
 
 /* ============================================================================
  * CONFIGURATION CONSTANTS

@@ -256,10 +256,10 @@ Dựa trên bảng số liệu thực nghiệm (file \texttt{decompose.csv}), ta
 \begin{tabular}{|l|c|c|l|}
 \hline
 \textbf{Thuật toán} & \textbf{Speedup tối đa ($S_{max}$)} & \textbf{Điểm bão hòa (Luồng)} & \textbf{Đặc điểm chính} \\ \hline
-Nhân ma trận (Cannon) & $\approx 11.3$ & 9 ($3 \times 3$) & Tăng tốc siêu tuyến tính nhờ tối ưu cache (blocking). \\ \hline
-Nhân ma trận (DNS) & $\approx 8.5$ & 8 ($2 \times 2 \times 2$) & Hiệu quả với số luồng lập phương, chi phí truyền thông cao. \\ \hline
-Jacobi (Trị riêng) & $\approx 4.4$ & - & Cần đồng bộ hóa liên tục, hiệu quả cao với $N \ge 1024$. \\ \hline
-SVD & $\approx 4.6$ & - & Chỉ hiệu quả với dữ liệu lớn ($N > 3000$), overhead lớn ở $N$ nhỏ. \\ \hline
+Nhân ma trận (Cannon) & $\approx 11.3$ & - & Tăng tốc siêu tuyến tính nhờ tối ưu cache (blocking). \\ \hline
+Nhân ma trận (DNS) & $\approx 8.5$ & - & Hiệu quả với số luồng lập phương, chi phí truyền thông cao. \\ \hline
+Jacobi & $\approx 4.4$ & - & Cần đồng bộ hóa liên tục, hiệu quả cao với $N \ge 1024$. \\ \hline
+Giảm chiều dữ liệu với SVD & $\approx 4.6$ & - & Chỉ hiệu quả với dữ liệu lớn ($N > 3000$), overhead lớn ở $N$ nhỏ. \\ \hline
 Sắp xếp (Argsort) & $\approx 4.4$ & 8 & Bị giới hạn bởi băng thông bộ nhớ khi merge. \\ \hline
 Chuyển vị (Transpose) & $\approx 5.0$ & 6 & Memory-bound, bão hòa sớm do nghẽn băng thông. \\ \hline
 Căn bậc hai (Square) & $\approx 3.8$ & 6-8 & Tác vụ quá nhẹ, chi phí quản lý luồng chiếm ưu thế. \\ \hline
